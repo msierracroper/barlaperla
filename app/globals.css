@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Identidad visual La Perla Video Bar */
+  --color-perla-azul: #0d2547;
+  --color-perla-azul-deep: #0a1830;
+  --color-perla-dorado: #f2c14e;
+  --color-perla-rojo: #c41230;
+  --color-perla-verde: #1f6f4a;
+  --color-perla-verde-claro: #4fce8c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-perla-azul: var(--color-perla-azul);
+  --color-perla-azul-deep: var(--color-perla-azul-deep);
+  --color-perla-dorado: var(--color-perla-dorado);
+  --color-perla-rojo: var(--color-perla-rojo);
+  --color-perla-verde: var(--color-perla-verde);
+  --color-perla-verde-claro: var(--color-perla-verde-claro);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
