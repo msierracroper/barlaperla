@@ -404,6 +404,23 @@ create policy "cajero y admin cierran/anulan cuentas"
   on cuentas for update
   using (tiene_rol('cajero') or tiene_rol('admin'));
 
+-- subcuentas tenia RLS activo desde el schema.sql original pero nunca se le
+-- escribieron politicas (bug real que bloqueaba abrir cuenta -> tomar pedido).
+create policy "usuarios autenticados leen subcuentas"
+  on subcuentas for select
+  using (auth.role() = 'authenticated');
+
+create policy "mesera, cajero y admin gestionan subcuentas"
+  on subcuentas for all
+  using (tiene_rol('mesera') or tiene_rol('cajero') or tiene_rol('admin'))
+  with check (tiene_rol('mesera') or tiene_rol('cajero') or tiene_rol('admin'));
+
+-- lectura abierta a cualquier autenticado (el cajero necesita ver los
+-- items de una cuenta para cobrarla, aunque no los cree ni los modifique).
+create policy "usuarios autenticados leen pedido_items"
+  on pedido_items for select
+  using (auth.role() = 'authenticated');
+
 create policy "mesera, preparador y admin gestionan pedido_items"
   on pedido_items for all
   using (tiene_rol('mesera') or tiene_rol('preparador') or tiene_rol('admin'))
@@ -424,10 +441,22 @@ create policy "cajero y admin gestionan gastos"
   using (tiene_rol('cajero') or tiene_rol('admin'))
   with check (tiene_rol('cajero') or tiene_rol('admin'));
 
+-- "for all" con solo admin bloqueaba tambien la LECTURA para el resto de
+-- roles (la mesera no podia ver el menu). Se agrega lectura abierta aparte;
+-- las politicas RLS son permisivas/OR, asi que esto no afloja la escritura.
+create policy "usuarios autenticados leen productos"
+  on productos for select
+  using (auth.role() = 'authenticated');
+
 create policy "solo admin gestiona productos"
   on productos for all
   using (tiene_rol('admin'))
   with check (tiene_rol('admin'));
+
+-- mismo caso que productos: se separa lectura (todos) de escritura (admin).
+create policy "usuarios autenticados leen botellas"
+  on botellas for select
+  using (auth.role() = 'authenticated');
 
 create policy "solo admin gestiona botellas e inventario"
   on botellas for all
@@ -466,7 +495,206 @@ create policy "solo admin gestiona roles"
   using (tiene_rol('admin'))
   with check (tiene_rol('admin'));
 
--- NOTA para Claude Code: revisar y completar políticas para el resto de
--- tablas (mesas, sillas_barra, categorias_producto, modificadores,
--- clientes_fiado, gastos_categorias, jornadas) siguiendo el mismo criterio
--- de roles.
+-- Resto de tablas: en este proyecto Supabase, RLS queda activo por defecto
+-- en TODA tabla nueva creada desde el SQL Editor (confirmado con
+-- pg_class.relrowsecurity), independientemente de si el create table
+-- original lo pedia. Sin politicas, Postgres deniega todo. Se completan
+-- aqui todas las que faltaban para que Fase 1 en adelante no vuelva a
+-- toparse con este bloqueo.
+
+create policy "usuarios autenticados leen sedes"
+  on sedes for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona sedes"
+  on sedes for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen mesas"
+  on mesas for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona mesas"
+  on mesas for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen barras"
+  on barras for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona barras"
+  on barras for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen sillas_barra"
+  on sillas_barra for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona sillas_barra"
+  on sillas_barra for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen categorias_producto"
+  on categorias_producto for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona categorias_producto"
+  on categorias_producto for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen modificadores"
+  on modificadores for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona modificadores"
+  on modificadores for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen producto_modificadores"
+  on producto_modificadores for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona producto_modificadores"
+  on producto_modificadores for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen stock_simple"
+  on stock_simple for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona stock_simple"
+  on stock_simple for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen recetas_coctel"
+  on recetas_coctel for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona recetas_coctel"
+  on recetas_coctel for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen clientes_fiado"
+  on clientes_fiado for select
+  using (auth.role() = 'authenticated');
+
+create policy "cajero y admin gestionan clientes_fiado"
+  on clientes_fiado for all
+  using (tiene_rol('cajero') or tiene_rol('admin'))
+  with check (tiene_rol('cajero') or tiene_rol('admin'));
+
+create policy "usuarios autenticados leen fiado_abonos"
+  on fiado_abonos for select
+  using (auth.role() = 'authenticated');
+
+create policy "cajero y admin registran fiado_abonos"
+  on fiado_abonos for insert
+  with check (tiene_rol('cajero') or tiene_rol('admin'));
+
+create policy "usuarios autenticados leen gastos_categorias"
+  on gastos_categorias for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona gastos_categorias"
+  on gastos_categorias for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen jornadas"
+  on jornadas for select
+  using (auth.role() = 'authenticated');
+
+create policy "cajero y admin gestionan jornadas"
+  on jornadas for all
+  using (tiene_rol('cajero') or tiene_rol('admin'))
+  with check (tiene_rol('cajero') or tiene_rol('admin'));
+
+create policy "usuarios autenticados leen parametros_sistema"
+  on parametros_sistema for select
+  using (auth.role() = 'authenticated');
+
+create policy "solo admin gestiona parametros_sistema"
+  on parametros_sistema for all
+  using (tiene_rol('admin'))
+  with check (tiene_rol('admin'));
+
+create policy "usuarios autenticados leen cuenta_ubicaciones"
+  on cuenta_ubicaciones for select
+  using (auth.role() = 'authenticated');
+
+create policy "mesera y admin crean cuenta_ubicaciones"
+  on cuenta_ubicaciones for insert
+  with check (tiene_rol('mesera') or tiene_rol('admin'));
+
+create policy "cajero y admin mueven cuenta_ubicaciones"
+  on cuenta_ubicaciones for update
+  using (tiene_rol('cajero') or tiene_rol('admin'))
+  with check (tiene_rol('cajero') or tiene_rol('admin'));
+
+create policy "cajero y admin eliminan cuenta_ubicaciones"
+  on cuenta_ubicaciones for delete
+  using (tiene_rol('cajero') or tiene_rol('admin'));
+
+-- mesera tambien dispara la auto-creacion de jornada al abrir una cuenta
+-- (ver funcion jornada_activa mas abajo), asi que necesita poder insertar.
+create policy "mesera crea jornadas al abrir cuenta"
+  on jornadas for insert
+  with check (tiene_rol('mesera') or tiene_rol('cajero') or tiene_rol('admin'));
+
+-- ============================================================================
+-- FUNCION jornada_activa(sede_id) -- resuelve o crea la jornada operativa
+-- ============================================================================
+-- Dia de negocio: ~17:00 a ~01:00 del dia siguiente (hora de Bogota). Toda
+-- pantalla que registre una venta/gasto/cierre debe llamar esta funcion en
+-- vez de duplicar la logica de fecha operativa. security definer para que
+-- cualquier rol autenticado pueda invocarla sin necesitar permisos directos
+-- de insert/select amplios sobre jornadas.
+
+create or replace function jornada_activa(p_sede_id uuid)
+returns jornadas
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_ahora_bogota timestamp;
+  v_fecha date;
+  v_jornada jornadas;
+begin
+  v_ahora_bogota := now() at time zone 'America/Bogota';
+  v_fecha := v_ahora_bogota::date;
+
+  if extract(hour from v_ahora_bogota) < 1 then
+    v_fecha := v_fecha - interval '1 day';
+  end if;
+
+  select * into v_jornada
+  from jornadas
+  where sede_id = p_sede_id and fecha_operativa = v_fecha;
+
+  if not found then
+    insert into jornadas (sede_id, fecha_operativa, usuario_apertura_id)
+    values (p_sede_id, v_fecha, auth.uid())
+    returning * into v_jornada;
+  end if;
+
+  return v_jornada;
+end;
+$$;
+
+grant execute on function jornada_activa(uuid) to authenticated;
+
+-- ============================================================================
+-- REALTIME -- necesario para que la mesera y el preparador vean cambios
+-- en pedido_items sin recargar (supabase.channel().on('postgres_changes'))
+-- ============================================================================
+alter publication supabase_realtime add table pedido_items;

@@ -9,6 +9,7 @@ export interface UsuarioActual {
   id: string;
   email: string | null;
   nombre: string;
+  sedeId: string | null;
   roles: RolTipo[];
 }
 
@@ -27,7 +28,11 @@ export const getUsuarioActual = cache(async (): Promise<UsuarioActual | null> =>
   if (!user) return null;
 
   const [{ data: usuarioRow }, { data: rolesRows }] = await Promise.all([
-    supabase.from("usuarios").select("nombre").eq("id", user.id).single(),
+    supabase
+      .from("usuarios")
+      .select("nombre, sede_id")
+      .eq("id", user.id)
+      .single(),
     supabase.from("usuario_roles").select("rol").eq("usuario_id", user.id),
   ]);
 
@@ -35,6 +40,7 @@ export const getUsuarioActual = cache(async (): Promise<UsuarioActual | null> =>
     id: user.id,
     email: user.email ?? null,
     nombre: usuarioRow?.nombre ?? user.email ?? "Usuario",
+    sedeId: usuarioRow?.sede_id ?? null,
     roles: (rolesRows ?? []).map((r) => r.rol),
   };
 });

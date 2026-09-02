@@ -115,7 +115,15 @@ export interface Database {
           usuario_id?: string;
           rol?: RolTipo;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "usuario_roles_usuario_id_fkey";
+            columns: ["usuario_id"];
+            isOneToOne: false;
+            referencedRelation: "usuarios";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       jornadas: {
         Row: {
@@ -361,7 +369,15 @@ export interface Database {
           activo?: boolean;
           created_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "productos_categoria_id_fkey";
+            columns: ["categoria_id"];
+            isOneToOne: false;
+            referencedRelation: "categorias_producto";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       modificadores: {
         Row: {
@@ -568,7 +584,22 @@ export interface Database {
           anulado_at?: string | null;
           created_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "pedido_items_producto_id_fkey";
+            columns: ["producto_id"];
+            isOneToOne: false;
+            referencedRelation: "productos";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "pedido_items_subcuenta_id_fkey";
+            columns: ["subcuenta_id"];
+            isOneToOne: false;
+            referencedRelation: "subcuentas";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       pagos: {
         Row: {
@@ -769,6 +800,10 @@ export interface Database {
         Args: { rol_buscado: RolTipo };
         Returns: boolean;
       };
+      jornada_activa: {
+        Args: { p_sede_id: string };
+        Returns: Database["public"]["Tables"]["jornadas"]["Row"];
+      };
     };
     Enums: {
       rol_tipo: RolTipo;
@@ -786,3 +821,5 @@ export interface Database {
     CompositeTypes: Record<string, never>;
   };
 }
+
+export type JornadaRow = Database["public"]["Tables"]["jornadas"]["Row"];
