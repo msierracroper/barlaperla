@@ -25,11 +25,12 @@ export default async function CocinaHomePage() {
     );
   }
 
-  const [{ data: subcuentas }, etiquetasCuenta, { data: productos }] =
+  const [{ data: subcuentas }, etiquetasCuenta, { data: productos }, { data: modificadores }] =
     await Promise.all([
       supabase.from("subcuentas").select("id, cuenta_id").in("cuenta_id", cuentaIds),
       etiquetasPorCuenta(cuentaIds),
       supabase.from("productos").select("id, nombre").eq("sede_id", usuario.sedeId ?? ""),
+      supabase.from("modificadores").select("id, nombre").eq("sede_id", usuario.sedeId ?? ""),
     ]);
 
   const etiquetaPorSubcuenta: Record<string, string> = {};
@@ -52,6 +53,7 @@ export default async function CocinaHomePage() {
     <ComandasPendientes
       itemsIniciales={items ?? []}
       productos={productos ?? []}
+      modificadores={modificadores ?? []}
       etiquetaPorSubcuenta={etiquetaPorSubcuenta}
     />
   );

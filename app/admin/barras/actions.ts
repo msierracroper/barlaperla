@@ -22,6 +22,31 @@ export async function toggleBarraActiva(barraId: string, activa: boolean) {
   revalidatePath("/admin/barras");
 }
 
+export async function actualizarBarra(barraId: string, formData: FormData) {
+  await requireRol("admin");
+  const nombre = String(formData.get("nombre") ?? "").trim();
+  if (!nombre) return;
+
+  const supabase = await createClient();
+  await supabase.from("barras").update({ nombre }).eq("id", barraId);
+  revalidatePath("/admin/barras");
+  revalidatePath(`/admin/barras/${barraId}`);
+}
+
+export async function actualizarSilla(
+  barraId: string,
+  sillaId: string,
+  formData: FormData
+) {
+  await requireRol("admin");
+  const numero = String(formData.get("numero") ?? "").trim();
+  if (!numero) return;
+
+  const supabase = await createClient();
+  await supabase.from("sillas_barra").update({ numero }).eq("id", sillaId);
+  revalidatePath(`/admin/barras/${barraId}`);
+}
+
 export async function crearSilla(barraId: string, formData: FormData) {
   await requireRol("admin");
   const numero = String(formData.get("numero") ?? "").trim();

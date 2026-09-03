@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
 import { inputClass, buttonPrimaryClass, linkButtonClass } from "@/components/ui/form-controls";
-import { crearBarra, toggleBarraActiva } from "./actions";
+import { crearBarra, toggleBarraActiva, actualizarBarra } from "./actions";
 
 export default async function BarrasPage() {
   const usuario = await requireRol("admin");
@@ -57,6 +57,19 @@ export default async function BarrasPage() {
                   <span className="ml-2 text-white/40">
                     (gestionar sillas)
                   </span>
+                  <form
+                    action={actualizarBarra.bind(null, barra.id)}
+                    className="mt-1 flex gap-1"
+                  >
+                    <input
+                      name="nombre"
+                      defaultValue={barra.nombre}
+                      className={`${inputClass} w-32 py-1`}
+                    />
+                    <button type="submit" className={linkButtonClass}>
+                      Guardar
+                    </button>
+                  </form>
                 </td>
                 <td className="px-4 py-2">
                   <span

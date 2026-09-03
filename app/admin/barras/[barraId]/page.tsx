@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
 import { inputClass, buttonPrimaryClass, linkButtonClass } from "@/components/ui/form-controls";
-import { crearSilla, toggleSillaActiva } from "../actions";
+import { crearSilla, toggleSillaActiva, actualizarSilla } from "../actions";
 
 export default async function BarraDetallePage({
   params,
@@ -67,7 +67,21 @@ export default async function BarraDetallePage({
                 key={silla.id}
                 className="border-t border-white/10 bg-perla-azul/60"
               >
-                <td className="px-4 py-2">{silla.numero}</td>
+                <td className="px-4 py-2">
+                  <form
+                    action={actualizarSilla.bind(null, barraId, silla.id)}
+                    className="flex gap-1"
+                  >
+                    <input
+                      name="numero"
+                      defaultValue={silla.numero}
+                      className={`${inputClass} w-24 py-1`}
+                    />
+                    <button type="submit" className={linkButtonClass}>
+                      Guardar
+                    </button>
+                  </form>
+                </td>
                 <td className="px-4 py-2">
                   <span
                     className={

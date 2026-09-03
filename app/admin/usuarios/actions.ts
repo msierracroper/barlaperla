@@ -85,3 +85,17 @@ export async function toggleUsuarioActivo(
   await supabase.from("usuarios").update({ activo }).eq("id", usuarioId);
   revalidatePath("/admin/usuarios");
 }
+
+export async function actualizarUsuario(usuarioId: string, formData: FormData) {
+  await requireRol("admin");
+  const nombre = String(formData.get("nombre") ?? "").trim();
+  const telefono = String(formData.get("telefono") ?? "").trim() || null;
+  if (!nombre) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("usuarios")
+    .update({ nombre, telefono })
+    .eq("id", usuarioId);
+  revalidatePath("/admin/usuarios");
+}

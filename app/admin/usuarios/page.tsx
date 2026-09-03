@@ -2,9 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
-import { linkButtonClass } from "@/components/ui/form-controls";
+import { inputClass, linkButtonClass } from "@/components/ui/form-controls";
 import { CrearUsuarioForm } from "./crear-usuario-form";
-import { toggleUsuarioActivo } from "./actions";
+import { toggleUsuarioActivo, actualizarUsuario } from "./actions";
 
 const ETIQUETA_ROL: Record<string, string> = {
   admin: "Admin",
@@ -55,7 +55,27 @@ export default async function UsuariosPage() {
                 key={u.id}
                 className="border-t border-white/10 bg-perla-azul/60"
               >
-                <td className="px-4 py-2">{u.nombre}</td>
+                <td className="px-4 py-2">
+                  <form
+                    action={actualizarUsuario.bind(null, u.id)}
+                    className="flex flex-wrap gap-1"
+                  >
+                    <input
+                      name="nombre"
+                      defaultValue={u.nombre}
+                      className={`${inputClass} w-32 py-1`}
+                    />
+                    <input
+                      name="telefono"
+                      defaultValue={u.telefono ?? ""}
+                      placeholder="Teléfono"
+                      className={`${inputClass} w-28 py-1`}
+                    />
+                    <button type="submit" className={linkButtonClass}>
+                      Guardar
+                    </button>
+                  </form>
+                </td>
                 <td className="px-4 py-2 text-white/70">
                   {emailPorId.get(u.id) ?? "—"}
                 </td>

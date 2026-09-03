@@ -39,3 +39,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* El navegador pinta el desplegable de <select> con blanco por defecto,
+   ignorando el fondo oscuro del <select> mismo; esto lo alinea con la
+   identidad visual para que la lista se lea igual que el resto de la UI. */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: var(--color-perla-azul);
+  color: #ffffff;
+}

@@ -3,6 +3,8 @@
 import { useRealtimePedidoItems } from "@/hooks/useRealtimePedidoItems";
 import { marcarEntregado } from "@/app/mesera/cuentas/[cuentaId]/actions";
 import { linkButtonClass } from "@/components/ui/form-controls";
+import { calcularTotalItem } from "@/lib/precio";
+import { etiquetaPedidoItem } from "@/lib/etiquetas";
 import type { Database } from "@/types/database.types";
 
 type PedidoItemRow = Database["public"]["Tables"]["pedido_items"]["Row"];
@@ -22,11 +24,13 @@ export function PedidoItemsList({
   subcuentaId,
   itemsIniciales,
   productos,
+  modificadores = [],
 }: {
   cuentaId: string;
   subcuentaId: string;
   itemsIniciales: PedidoItemRow[];
   productos: { id: string; nombre: string }[];
+  modificadores?: { id: string; nombre: string }[];
 }) {
   const items = useRealtimePedidoItems(itemsIniciales, {
     column: "subcuenta_id",
@@ -34,6 +38,7 @@ export function PedidoItemsList({
   });
 
   const nombrePorProducto = new Map(productos.map((p) => [p.id, p.nombre]));
+  const nombrePorModificador = new Map(modificadores.map((m) => [m.id, m.nombre]));
 
   const ordenados = [...items].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -54,9 +59,7 @@ export function PedidoItemsList({
         <tbody>
           {ordenados.map((item) => {
             const estado = ETIQUETA_ESTADO[item.estado];
-            const subtotal =
-              item.cantidad * item.precio_unitario +
-              item.cantidad * (item.precio_modificador ?? 0);
+            const subtotal = calcularTotalItem(item);
 
             return (
               <tr
@@ -64,7 +67,7 @@ export function PedidoItemsList({
                 className="border-t border-white/10 bg-perla-azul/60"
               >
                 <td className="px-4 py-2">
-                  {nombrePorProducto.get(item.producto_id) ?? "Producto"}
+                  {etiquetaPedidoItem(item, nombrePorProducto, nombrePorModificador)}
                 </td>
                 <td className="px-4 py-2 text-right">{item.cantidad}</td>
                 <td className="px-4 py-2 text-right">

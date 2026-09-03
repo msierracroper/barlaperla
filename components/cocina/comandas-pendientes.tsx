@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRealtimePedidoItems } from "@/hooks/useRealtimePedidoItems";
 import { marcarListoPorSubcuenta } from "@/app/cocina/actions";
 import { buttonPrimaryClass } from "@/components/ui/form-controls";
+import { etiquetaPedidoItem } from "@/lib/etiquetas";
 import type { Database } from "@/types/database.types";
 
 type PedidoItemRow = Database["public"]["Tables"]["pedido_items"]["Row"];
@@ -31,14 +32,17 @@ interface Comanda {
 export function ComandasPendientes({
   itemsIniciales,
   productos,
+  modificadores = [],
   etiquetaPorSubcuenta,
 }: {
   itemsIniciales: PedidoItemRow[];
   productos: { id: string; nombre: string }[];
+  modificadores?: { id: string; nombre: string }[];
   etiquetaPorSubcuenta: Record<string, string>;
 }) {
   const items = useRealtimePedidoItems(itemsIniciales);
   const nombrePorProducto = new Map(productos.map((p) => [p.id, p.nombre]));
+  const nombrePorModificador = new Map(modificadores.map((m) => [m.id, m.nombre]));
 
   const [, forzarTick] = useState(0);
   useEffect(() => {
@@ -90,6 +94,7 @@ export function ComandasPendientes({
                 key={comanda.subcuentaId}
                 comanda={comanda}
                 nombrePorProducto={nombrePorProducto}
+                nombrePorModificador={nombrePorModificador}
               />
             ))}
           </div>
@@ -122,7 +127,8 @@ export function ComandasPendientes({
                 <p className="mt-1 text-xs text-white/40">
                   {comanda.items
                     .map(
-                      (i) => `${i.cantidad}x ${nombrePorProducto.get(i.producto_id) ?? "Producto"}`
+                      (i) =>
+                        `${i.cantidad}x ${etiquetaPedidoItem(i, nombrePorProducto, nombrePorModificador)}`
                     )
                     .join(" · ")}
                 </p>
@@ -138,9 +144,11 @@ export function ComandasPendientes({
 function TarjetaComanda({
   comanda,
   nombrePorProducto,
+  nombrePorModificador,
 }: {
   comanda: Comanda;
   nombrePorProducto: Map<string, string>;
+  nombrePorModificador: Map<string, string>;
 }) {
   const [pending, startTransition] = useTransition();
 
@@ -155,7 +163,8 @@ function TarjetaComanda({
       <p className="mt-1 text-sm text-white/70">
         {comanda.items
           .map(
-            (i) => `${i.cantidad}x ${nombrePorProducto.get(i.producto_id) ?? "Producto"}`
+            (i) =>
+              `${i.cantidad}x ${etiquetaPedidoItem(i, nombrePorProducto, nombrePorModificador)}`
           )
           .join(" · ")}
       </p>

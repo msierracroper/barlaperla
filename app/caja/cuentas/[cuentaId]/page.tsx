@@ -4,6 +4,7 @@ import { requireRol } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/server";
 import { etiquetasPorCuenta } from "@/lib/ubicaciones";
 import { calcularTotalItem } from "@/lib/precio";
+import { etiquetaPedidoItem } from "@/lib/etiquetas";
 import { Card } from "@/components/ui/card";
 import { PagoForm } from "@/components/caja/pago-form";
 
@@ -32,17 +33,20 @@ export default async function CobrarCuentaPage({
 
   if (!subcuenta) notFound();
 
-  const [{ data: items }, { data: productos }, etiquetas] = await Promise.all([
-    supabase
-      .from("pedido_items")
-      .select("id, producto_id, cantidad, precio_unitario, precio_modificador, anulado")
-      .eq("subcuenta_id", subcuenta.id)
-      .order("created_at"),
-    supabase.from("productos").select("id, nombre"),
-    etiquetasPorCuenta([cuentaId]),
-  ]);
+  const [{ data: items }, { data: productos }, { data: modificadores }, etiquetas] =
+    await Promise.all([
+      supabase
+        .from("pedido_items")
+        .select("id, producto_id, modificador_id, cantidad, precio_unitario, precio_modificador, anulado")
+        .eq("subcuenta_id", subcuenta.id)
+        .order("created_at"),
+      supabase.from("productos").select("id, nombre"),
+      supabase.from("modificadores").select("id, nombre"),
+      etiquetasPorCuenta([cuentaId]),
+    ]);
 
   const nombrePorProducto = new Map((productos ?? []).map((p) => [p.id, p.nombre]));
+  const nombrePorModificador = new Map((modificadores ?? []).map((m) => [m.id, m.nombre]));
   const itemsActivos = (items ?? []).filter((i) => !i.anulado);
   const total = itemsActivos.reduce((acc, i) => acc + calcularTotalItem(i), 0);
 
@@ -73,7 +77,8 @@ export default async function CobrarCuentaPage({
           {itemsActivos.map((item) => (
             <div key={item.id} className="flex justify-between">
               <span>
-                {item.cantidad}x {nombrePorProducto.get(item.producto_id) ?? "Producto"}
+                {item.cantidad}x{" "}
+                {etiquetaPedidoItem(item, nombrePorProducto, nombrePorModificador)}
               </span>
               <span>${calcularTotalItem(item).toLocaleString("es-CO")}</span>
             </div>

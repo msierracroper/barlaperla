@@ -11,21 +11,29 @@ const TIPOS_CONTROL: ControlInventarioTipo[] = [
   "receta",
 ];
 
-export async function crearProducto(formData: FormData) {
+export interface DatosProducto {
+  nombre: string;
+  categoriaId: string | null;
+  precioVenta: number;
+  controlInventario: ControlInventarioTipo;
+  stockMinimo: number;
+  activo: boolean;
+}
+
+function validar(datos: DatosProducto) {
+  if (!datos.nombre.trim()) throw new Error("El nombre es obligatorio.");
+  if (!Number.isFinite(datos.precioVenta) || datos.precioVenta < 0) {
+    throw new Error("El precio no es válido.");
+  }
+  if (!TIPOS_CONTROL.includes(datos.controlInventario)) {
+    throw new Error("Tipo de control inválido.");
+  }
+}
+
+export async function crearProducto(datos: DatosProducto) {
   const usuario = await requireRol("admin");
-  if (!usuario.sedeId) return;
-
-  const nombre = String(formData.get("nombre") ?? "").trim();
-  const precioVenta = Number(formData.get("precio_venta"));
-  const categoriaId = String(formData.get("categoria_id") ?? "") || null;
-  const controlInventario = String(
-    formData.get("control_inventario") ?? "simple"
-  ) as ControlInventarioTipo;
-  const stockMinimoRaw = String(formData.get("stock_minimo") ?? "").trim();
-  const stockMinimo = stockMinimoRaw ? Number(stockMinimoRaw) : 0;
-
-  if (!nombre || !Number.isFinite(precioVenta) || precioVenta < 0) return;
-  if (!TIPOS_CONTROL.includes(controlInventario)) return;
+  if (!usuario.sedeId) throw new Error("El admin no tiene sede asignada.");
+  validar(datos);
 
   const supabase = await createClient();
 
@@ -33,19 +41,52 @@ export async function crearProducto(formData: FormData) {
     .from("productos")
     .insert({
       sede_id: usuario.sedeId,
-      categoria_id: categoriaId,
-      nombre,
-      precio_venta: precioVenta,
-      control_inventario: controlInventario,
-      stock_minimo: stockMinimo,
+      categoria_id: datos.categoriaId,
+      nombre: datos.nombre.trim(),
+      precio_venta: datos.precioVenta,
+      control_inventario: datos.controlInventario,
+      stock_minimo: datos.stockMinimo,
+      activo: datos.activo,
     })
     .select("id")
     .single();
 
-  if (!error && producto && controlInventario === "simple") {
+  if (error) {
+    throw new Error(`No se pudo crear el producto: ${error.message}`);
+  }
+
+  if (producto && datos.controlInventario === "simple") {
     await supabase
       .from("stock_simple")
       .insert({ producto_id: producto.id, cantidad_actual: 0 });
+  }
+
+  revalidatePath("/admin/productos");
+}
+
+export async function actualizarProducto(
+  productoId: string,
+  datos: DatosProducto
+) {
+  await requireRol("admin");
+  validar(datos);
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("productos")
+    .update({
+      nombre: datos.nombre.trim(),
+      categoria_id: datos.categoriaId,
+      precio_venta: datos.precioVenta,
+      control_inventario: datos.controlInventario,
+      stock_minimo: datos.stockMinimo,
+      activo: datos.activo,
+    })
+    .eq("id", productoId);
+
+  if (error) {
+    throw new Error(`No se pudo actualizar el producto: ${error.message}`);
   }
 
   revalidatePath("/admin/productos");

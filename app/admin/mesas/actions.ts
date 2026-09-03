@@ -24,3 +24,13 @@ export async function toggleMesaActiva(mesaId: string, activa: boolean) {
   await supabase.from("mesas").update({ activa }).eq("id", mesaId);
   revalidatePath("/admin/mesas");
 }
+
+export async function actualizarMesa(mesaId: string, formData: FormData) {
+  await requireRol("admin");
+  const numero = String(formData.get("numero") ?? "").trim();
+  if (!numero) return;
+
+  const supabase = await createClient();
+  await supabase.from("mesas").update({ numero }).eq("id", mesaId);
+  revalidatePath("/admin/mesas");
+}

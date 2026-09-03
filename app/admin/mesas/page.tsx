@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
 import { inputClass, buttonPrimaryClass, linkButtonClass } from "@/components/ui/form-controls";
-import { crearMesa, toggleMesaActiva } from "./actions";
+import { crearMesa, toggleMesaActiva, actualizarMesa } from "./actions";
 
 export default async function MesasPage() {
   const usuario = await requireRol("admin");
@@ -46,7 +46,21 @@ export default async function MesasPage() {
                 key={mesa.id}
                 className="border-t border-white/10 bg-perla-azul/60"
               >
-                <td className="px-4 py-2">{mesa.numero}</td>
+                <td className="px-4 py-2">
+                  <form
+                    action={actualizarMesa.bind(null, mesa.id)}
+                    className="flex gap-1"
+                  >
+                    <input
+                      name="numero"
+                      defaultValue={mesa.numero}
+                      className={`${inputClass} w-32 py-1`}
+                    />
+                    <button type="submit" className={linkButtonClass}>
+                      Guardar
+                    </button>
+                  </form>
+                </td>
                 <td className="px-4 py-2">
                   <span
                     className={
