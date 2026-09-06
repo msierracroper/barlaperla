@@ -9,6 +9,7 @@ const TIPOS_CONTROL: ControlInventarioTipo[] = [
   "simple",
   "licor_multiuso",
   "receta",
+  "shot_de_licor",
 ];
 
 export interface DatosProducto {
@@ -16,6 +17,7 @@ export interface DatosProducto {
   categoriaId: string | null;
   precioVenta: number;
   controlInventario: ControlInventarioTipo;
+  licorBaseId: string | null;
   stockMinimo: number;
   activo: boolean;
 }
@@ -27,6 +29,9 @@ function validar(datos: DatosProducto) {
   }
   if (!TIPOS_CONTROL.includes(datos.controlInventario)) {
     throw new Error("Tipo de control inválido.");
+  }
+  if (datos.controlInventario === "shot_de_licor" && !datos.licorBaseId) {
+    throw new Error("Selecciona a qué licor descuenta este shot.");
   }
 }
 
@@ -45,6 +50,8 @@ export async function crearProducto(datos: DatosProducto) {
       nombre: datos.nombre.trim(),
       precio_venta: datos.precioVenta,
       control_inventario: datos.controlInventario,
+      licor_base_id:
+        datos.controlInventario === "shot_de_licor" ? datos.licorBaseId : null,
       stock_minimo: datos.stockMinimo,
       activo: datos.activo,
     })
@@ -80,6 +87,8 @@ export async function actualizarProducto(
       categoria_id: datos.categoriaId,
       precio_venta: datos.precioVenta,
       control_inventario: datos.controlInventario,
+      licor_base_id:
+        datos.controlInventario === "shot_de_licor" ? datos.licorBaseId : null,
       stock_minimo: datos.stockMinimo,
       activo: datos.activo,
     })

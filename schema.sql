@@ -155,8 +155,9 @@ create table categorias_producto (
 
 create type control_inventario_tipo as enum (
   'simple',        -- cervezas, aguas, enlatados: solo unidades
-  'licor_multiuso',-- licores: venta directa / shots / coctelería, control por botella + ml
-  'receta'         -- cócteles: descuenta ingredientes de su receta, no tiene stock propio
+  'licor_multiuso',-- licores vendidos por botella completa: control por botella (unidad)
+  'receta',        -- cócteles: descuenta ingredientes de su receta, no tiene stock propio
+  'shot_de_licor'  -- shots: no tiene stock propio, descuenta ml de la botella 'abierta_shots' de licor_base_id
 );
 
 create table productos (
@@ -167,6 +168,9 @@ create table productos (
   precio_venta numeric(12,2) not null,
   costo_promedio numeric(12,2) not null default 0, -- se recalcula en cada ingreso de inventario
   control_inventario control_inventario_tipo not null default 'simple',
+  -- solo aplica cuando control_inventario='shot_de_licor': a que producto
+  -- 'licor_multiuso' (la botella fisica) se le descuentan los ml de este shot.
+  licor_base_id uuid references productos(id),
   stock_minimo numeric(12,2) default 0,             -- unidades (o ml si aplica)
   activo boolean not null default true,
   created_at timestamptz not null default now()
@@ -315,6 +319,11 @@ create table fiado_abonos (
   id uuid primary key default gen_random_uuid(),
   fiado_id uuid not null references fiados(id) on delete cascade,
   monto numeric(12,2) not null,
+  -- metodo/jornada_id: para que el abono (dinero que SI entra a caja hoy,
+  -- a diferencia del fiado original) cuente en el resumen/arqueo de caja
+  -- del dia en que se recibe, no del dia en que se origino el fiado.
+  metodo metodo_pago not null default 'efectivo',
+  jornada_id uuid not null references jornadas(id),
   registrado_por uuid not null references usuarios(id),
   created_at timestamptz not null default now()
 );
@@ -361,6 +370,7 @@ create index idx_pedido_items_estado on pedido_items(estado);
 create index idx_inventario_mov_producto on inventario_movimientos(producto_id);
 create index idx_botellas_producto on botellas(producto_id);
 create index idx_fiados_cliente on fiados(cliente_fiado_id);
+create index idx_fiado_abonos_jornada on fiado_abonos(jornada_id);
 create index idx_gastos_jornada on gastos(jornada_id);
 
 -- ============================================================================
@@ -421,6 +431,14 @@ create policy "usuarios autenticados leen pedido_items"
   on pedido_items for select
   using (auth.role() = 'authenticated');
 
+-- anulaciones: por regla de negocio del alcance, solo cajero/admin pueden
+-- anular un item (la mesera solo crea/ajusta items en estado pendiente,
+-- ya cubierto por la politica de mesera/preparador/admin de mas abajo).
+create policy "cajero y admin anulan pedido_items"
+  on pedido_items for update
+  using (tiene_rol('cajero') or tiene_rol('admin'))
+  with check (tiene_rol('cajero') or tiene_rol('admin'));
+
 create policy "mesera, preparador y admin gestionan pedido_items"
   on pedido_items for all
   using (tiene_rol('mesera') or tiene_rol('preparador') or tiene_rol('admin'))
@@ -466,6 +484,13 @@ create policy "solo admin gestiona botellas e inventario"
 create policy "usuarios ven movimientos de inventario"
   on inventario_movimientos for select
   using (auth.role() = 'authenticated');
+
+-- esta tabla nunca tuvo politica de escritura (solo se le habia dado
+-- select) -- sin esto, el ingreso de inventario (admin) se bloquea en
+-- silencio por RLS.
+create policy "solo admin registra movimientos de inventario"
+  on inventario_movimientos for insert
+  with check (tiene_rol('admin'));
 
 -- usuarios y usuario_roles: RLS activo (algunos proyectos Supabase lo
 -- habilitan por defecto en tablas nuevas). tiene_rol() es security definer,
@@ -635,10 +660,10 @@ create policy "mesera y admin crean cuenta_ubicaciones"
   on cuenta_ubicaciones for insert
   with check (tiene_rol('mesera') or tiene_rol('admin'));
 
-create policy "cajero y admin mueven cuenta_ubicaciones"
+create policy "mesera, cajero y admin mueven cuenta_ubicaciones"
   on cuenta_ubicaciones for update
-  using (tiene_rol('cajero') or tiene_rol('admin'))
-  with check (tiene_rol('cajero') or tiene_rol('admin'));
+  using (tiene_rol('mesera') or tiene_rol('cajero') or tiene_rol('admin'))
+  with check (tiene_rol('mesera') or tiene_rol('cajero') or tiene_rol('admin'));
 
 create policy "cajero y admin eliminan cuenta_ubicaciones"
   on cuenta_ubicaciones for delete
@@ -692,6 +717,261 @@ end;
 $$;
 
 grant execute on function jornada_activa(uuid) to authenticated;
+
+-- ============================================================================
+-- FUNCION registrar_movimiento_stock_simple -- descuento/reposicion atomico
+-- ============================================================================
+-- Ajusta stock_simple.cantidad_actual y registra el movimiento en un solo
+-- paso atomico (evita "lost update" si dos meseras venden el mismo producto
+-- casi al mismo tiempo -- un UPDATE ... SET x = x + delta es atomico en
+-- Postgres, a diferencia de leer y despues escribir desde la aplicacion).
+-- security definer: mesera vende (delta negativo) y cajero/admin anulan
+-- (delta positivo) sin necesitar permisos directos de escritura sobre
+-- stock_simple/inventario_movimientos (que siguen restringidos a admin
+-- para edicion manual). cantidad_actual nunca baja de 0 (greatest).
+create or replace function registrar_movimiento_stock_simple(
+  p_producto_id uuid,
+  p_delta numeric,
+  p_tipo movimiento_tipo,
+  p_referencia_id uuid
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update stock_simple
+  set cantidad_actual = greatest(0, cantidad_actual + p_delta)
+  where producto_id = p_producto_id;
+
+  insert into inventario_movimientos (producto_id, tipo, cantidad, referencia_id, usuario_id)
+  values (p_producto_id, p_tipo, p_delta, p_referencia_id, auth.uid());
+end;
+$$;
+
+grant execute on function registrar_movimiento_stock_simple(uuid, numeric, movimiento_tipo, uuid) to authenticated;
+
+-- ============================================================================
+-- FUNCIONES de botellas -- venta directa (unidad) y venta por shots (ml)
+-- ============================================================================
+-- Mismo motivo que registrar_movimiento_stock_simple: atomico + security
+-- definer para que mesera/cajero no necesiten permisos directos sobre
+-- botellas/inventario_movimientos.
+
+-- Venta directa de botella(s) completa(s) (producto control_inventario=
+-- 'licor_multiuso' vendido tal cual, ej. "Aguardiente" en la categoria
+-- Licores). Todo o nada: si no hay suficientes botellas 'cerrada', rechaza.
+create or replace function vender_botella_completa(
+  p_producto_id uuid,
+  p_cantidad int,
+  p_referencia_id uuid
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_botella_id uuid;
+  v_disponibles int;
+begin
+  select count(*) into v_disponibles
+  from botellas
+  where producto_id = p_producto_id and estado = 'cerrada';
+
+  if v_disponibles < p_cantidad then
+    raise exception 'No hay suficientes botellas cerradas disponibles (disponibles: %, pedidas: %).', v_disponibles, p_cantidad;
+  end if;
+
+  for v_botella_id in
+    select id from botellas
+    where producto_id = p_producto_id and estado = 'cerrada'
+    order by fecha_ingreso asc
+    limit p_cantidad
+  loop
+    update botellas set estado = 'agotada' where id = v_botella_id;
+    insert into inventario_movimientos (producto_id, botella_id, tipo, cantidad, referencia_id, usuario_id)
+    values (p_producto_id, v_botella_id, 'venta', -1, p_referencia_id, auth.uid());
+  end loop;
+end;
+$$;
+
+grant execute on function vender_botella_completa(uuid, int, uuid) to authenticated;
+
+-- Reversa de vender_botella_completa (anular el item): busca todos los
+-- movimientos de venta con esa referencia y regresa cada botella a 'cerrada'.
+create or replace function reponer_botella_completa(p_referencia_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_mov inventario_movimientos;
+begin
+  for v_mov in
+    select * from inventario_movimientos
+    where referencia_id = p_referencia_id and tipo = 'venta' and botella_id is not null
+  loop
+    update botellas set estado = 'cerrada' where id = v_mov.botella_id;
+    insert into inventario_movimientos (producto_id, botella_id, tipo, cantidad, referencia_id, usuario_id)
+    values (v_mov.producto_id, v_mov.botella_id, 'anulacion', 1, p_referencia_id, auth.uid());
+  end loop;
+end;
+$$;
+
+grant execute on function reponer_botella_completa(uuid) to authenticated;
+
+-- Venta por shots: descuenta ml de LA botella 'abierta_shots' del licor
+-- base (por diseño se abre una sola botella a la vez para shots -- si no
+-- alcanza, rechaza y hay que convertir otra botella 'cerrada' manualmente
+-- desde Admin > Inventario, no se reparte automaticamente entre varias).
+create or replace function vender_shot(
+  p_licor_base_id uuid,
+  p_ml numeric,
+  p_referencia_id uuid
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_botella botellas;
+begin
+  select * into v_botella
+  from botellas
+  where producto_id = p_licor_base_id and estado = 'abierta_shots'
+  order by convertida_at asc nulls last
+  limit 1;
+
+  if not found or v_botella.volumen_ml_restante < p_ml then
+    raise exception 'No hay suficiente volumen en la botella abierta para shots de este licor.';
+  end if;
+
+  update botellas
+  set volumen_ml_restante = volumen_ml_restante - p_ml,
+      estado = case when volumen_ml_restante - p_ml <= 0 then 'agotada'::botella_estado else estado end
+  where id = v_botella.id;
+
+  insert into inventario_movimientos (producto_id, botella_id, tipo, cantidad, referencia_id, usuario_id)
+  values (p_licor_base_id, v_botella.id, 'venta', -p_ml, p_referencia_id, auth.uid());
+end;
+$$;
+
+grant execute on function vender_shot(uuid, numeric, uuid) to authenticated;
+
+-- Reversa de vender_shot (anular el item): regresa el ml a la botella de
+-- donde salio (aunque haya quedado 'agotada') y la reabre a 'abierta_shots'.
+create or replace function reponer_shot(p_referencia_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_mov inventario_movimientos;
+begin
+  select * into v_mov
+  from inventario_movimientos
+  where referencia_id = p_referencia_id and tipo = 'venta' and botella_id is not null
+  order by created_at desc
+  limit 1;
+
+  if not found then
+    return;
+  end if;
+
+  update botellas
+  set volumen_ml_restante = volumen_ml_restante + abs(v_mov.cantidad),
+      estado = 'abierta_shots'
+  where id = v_mov.botella_id;
+
+  insert into inventario_movimientos (producto_id, botella_id, tipo, cantidad, referencia_id, usuario_id)
+  values (v_mov.producto_id, v_mov.botella_id, 'anulacion', abs(v_mov.cantidad), p_referencia_id, auth.uid());
+end;
+$$;
+
+grant execute on function reponer_shot(uuid) to authenticated;
+
+-- Venta de coctel: descuenta ml de la botella 'abierta_coctel' de CADA
+-- ingrediente de la receta (recetas_coctel). Todo o nada -- si algun
+-- ingrediente no alcanza, se aborta (una excepcion sin capturar dentro de
+-- una funcion plpgsql revierte automaticamente lo que ya se hubiera hecho
+-- en ese mismo llamado, no hace falta un rollback manual).
+create or replace function vender_coctel(
+  p_producto_coctel_id uuid,
+  p_cantidad int,
+  p_referencia_id uuid
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_ingrediente record;
+  v_botella botellas;
+  v_ml_necesario numeric;
+begin
+  for v_ingrediente in
+    select producto_ingrediente_id, cantidad_ml
+    from recetas_coctel
+    where producto_coctel_id = p_producto_coctel_id
+  loop
+    v_ml_necesario := v_ingrediente.cantidad_ml * p_cantidad;
+
+    select * into v_botella
+    from botellas
+    where producto_id = v_ingrediente.producto_ingrediente_id and estado = 'abierta_coctel'
+    order by convertida_at asc nulls last
+    limit 1;
+
+    if not found or v_botella.volumen_ml_restante < v_ml_necesario then
+      raise exception 'No hay suficiente volumen abierto para cocteleria de uno de los ingredientes.';
+    end if;
+
+    update botellas
+    set volumen_ml_restante = volumen_ml_restante - v_ml_necesario,
+        estado = case when volumen_ml_restante - v_ml_necesario <= 0 then 'agotada'::botella_estado else estado end
+    where id = v_botella.id;
+
+    insert into inventario_movimientos (producto_id, botella_id, tipo, cantidad, referencia_id, usuario_id)
+    values (v_ingrediente.producto_ingrediente_id, v_botella.id, 'venta', -v_ml_necesario, p_referencia_id, auth.uid());
+  end loop;
+end;
+$$;
+
+grant execute on function vender_coctel(uuid, int, uuid) to authenticated;
+
+-- Reversa de vender_coctel: recorre TODOS los movimientos de venta con esa
+-- referencia (uno por ingrediente) y regresa cada botella a 'abierta_coctel'.
+create or replace function reponer_coctel(p_referencia_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_mov inventario_movimientos;
+begin
+  for v_mov in
+    select * from inventario_movimientos
+    where referencia_id = p_referencia_id and tipo = 'venta' and botella_id is not null
+  loop
+    update botellas
+    set volumen_ml_restante = volumen_ml_restante + abs(v_mov.cantidad),
+        estado = 'abierta_coctel'
+    where id = v_mov.botella_id;
+
+    insert into inventario_movimientos (producto_id, botella_id, tipo, cantidad, referencia_id, usuario_id)
+    values (v_mov.producto_id, v_mov.botella_id, 'anulacion', abs(v_mov.cantidad), p_referencia_id, auth.uid());
+  end loop;
+end;
+$$;
+
+grant execute on function reponer_coctel(uuid) to authenticated;
 
 -- ============================================================================
 -- REALTIME -- necesario para que la mesera y el preparador vean cambios

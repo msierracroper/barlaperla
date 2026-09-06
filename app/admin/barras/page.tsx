@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
-import { inputClass, buttonPrimaryClass, linkButtonClass } from "@/components/ui/form-controls";
+import { inputClass, buttonPrimaryClass, buttonSecondaryClass } from "@/components/ui/form-controls";
 import { crearBarra, toggleBarraActiva, actualizarBarra } from "./actions";
 
 export default async function BarrasPage() {
@@ -66,7 +66,7 @@ export default async function BarrasPage() {
                       defaultValue={barra.nombre}
                       className={`${inputClass} w-32 py-1`}
                     />
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       Guardar
                     </button>
                   </form>
@@ -88,7 +88,7 @@ export default async function BarrasPage() {
                       !barra.activa
                     )}
                   >
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       {barra.activa ? "Desactivar" : "Activar"}
                     </button>
                   </form>

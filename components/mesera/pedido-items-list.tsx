@@ -1,8 +1,7 @@
 "use client";
 
-import { useRealtimePedidoItems } from "@/hooks/useRealtimePedidoItems";
 import { marcarEntregado } from "@/app/mesera/cuentas/[cuentaId]/actions";
-import { linkButtonClass } from "@/components/ui/form-controls";
+import { buttonSecondaryClass } from "@/components/ui/form-controls";
 import { calcularTotalItem } from "@/lib/precio";
 import { etiquetaPedidoItem } from "@/lib/etiquetas";
 import type { Database } from "@/types/database.types";
@@ -19,24 +18,23 @@ const ETIQUETA_ESTADO: Record<
   anulado: { texto: "Anulado", clase: "text-red-400" },
 };
 
+/**
+ * Presentacional: recibe los items ya en vivo desde el padre (CuentaDetalle)
+ * en vez de suscribirse por su cuenta a Realtime, para no tener dos fuentes
+ * de verdad compitiendo cuando el server revalida (eso causaba items que
+ * parecian "borrarse" al cambiar de sub-cuenta).
+ */
 export function PedidoItemsList({
   cuentaId,
-  subcuentaId,
-  itemsIniciales,
+  items,
   productos,
   modificadores = [],
 }: {
   cuentaId: string;
-  subcuentaId: string;
-  itemsIniciales: PedidoItemRow[];
+  items: PedidoItemRow[];
   productos: { id: string; nombre: string }[];
   modificadores?: { id: string; nombre: string }[];
 }) {
-  const items = useRealtimePedidoItems(itemsIniciales, {
-    column: "subcuenta_id",
-    value: subcuentaId,
-  });
-
   const nombrePorProducto = new Map(productos.map((p) => [p.id, p.nombre]));
   const nombrePorModificador = new Map(modificadores.map((m) => [m.id, m.nombre]));
 
@@ -79,7 +77,7 @@ export function PedidoItemsList({
                     <button
                       type="button"
                       onClick={() => marcarEntregado(cuentaId, item.id)}
-                      className={linkButtonClass}
+                      className={buttonSecondaryClass}
                     >
                       Marcar entregado
                     </button>

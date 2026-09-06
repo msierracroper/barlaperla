@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
-import { inputClass, linkButtonClass } from "@/components/ui/form-controls";
+import { inputClass, buttonSecondaryClass } from "@/components/ui/form-controls";
 import { CrearUsuarioForm } from "./crear-usuario-form";
 import { toggleUsuarioActivo, actualizarUsuario } from "./actions";
 
@@ -71,7 +71,7 @@ export default async function UsuariosPage() {
                       placeholder="Teléfono"
                       className={`${inputClass} w-28 py-1`}
                     />
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       Guardar
                     </button>
                   </form>
@@ -96,7 +96,7 @@ export default async function UsuariosPage() {
                   <form
                     action={toggleUsuarioActivo.bind(null, u.id, !u.activo)}
                   >
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       {u.activo ? "Desactivar" : "Activar"}
                     </button>
                   </form>

@@ -19,16 +19,25 @@ export function useRealtimePedidoItems(
   filtro?: { column: string; value: string }
 ) {
   // itemsIniciales cambia cuando el Server Component padre se revalida
-  // (ej. la mesera agrega un producto). Se sincroniza ajustando el estado
-  // durante el render en vez de con un efecto, siguiendo el patron oficial
-  // de React para "adjusting state when a prop changes".
+  // (ej. la mesera agrega un producto o crea una sub-cuenta). Se sincroniza
+  // ajustando el estado durante el render en vez de con un efecto,
+  // siguiendo el patron oficial de React para "adjusting state when a prop
+  // changes" -- pero por UNION (nunca se quita un item que Realtime ya
+  // habia entregado), porque un revalidate en pleno vuelo puede llegar con
+  // una foto ligeramente vieja y no debe "borrar" lo que ya se veia.
   const firmaIniciales = itemsIniciales.map((i) => i.id).join(",");
   const [items, setItems] = useState(itemsIniciales);
   const [firmaSincronizada, setFirmaSincronizada] = useState(firmaIniciales);
 
   if (firmaIniciales !== firmaSincronizada) {
     setFirmaSincronizada(firmaIniciales);
-    setItems(itemsIniciales);
+    setItems((actuales) => {
+      const porId = new Map(actuales.map((i) => [i.id, i]));
+      for (const item of itemsIniciales) {
+        porId.set(item.id, item);
+      }
+      return Array.from(porId.values());
+    });
   }
 
   useEffect(() => {

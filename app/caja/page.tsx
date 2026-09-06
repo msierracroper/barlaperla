@@ -33,7 +33,7 @@ export default async function CajaHomePage() {
   const { data: cuentasAbiertas } = await supabase
     .from("cuentas")
     .select("id, tipo, created_at")
-    .eq("jornada_id", jornada.id)
+    .eq("sede_id", usuario.sedeId)
     .eq("estado", "abierta")
     .order("created_at");
 
@@ -42,15 +42,24 @@ export default async function CajaHomePage() {
   const [etiquetas, { data: subcuentas }, resumen] = await Promise.all([
     etiquetasPorCuenta(cuentaIds),
     cuentaIds.length
-      ? supabase.from("subcuentas").select("id, cuenta_id").in("cuenta_id", cuentaIds)
-      : Promise.resolve({ data: [] as { id: string; cuenta_id: string }[] }),
+      ? supabase
+          .from("subcuentas")
+          .select("id, cuenta_id, estado")
+          .in("cuenta_id", cuentaIds)
+      : Promise.resolve({ data: [] as { id: string; cuenta_id: string; estado: string }[] }),
     calcularResumenCaja(jornada.id),
   ]);
 
-  const subcuentaPorCuenta = new Map(
-    (subcuentas ?? []).map((s) => [s.cuenta_id, s.id])
+  const subcuentasPendientes = (subcuentas ?? []).filter(
+    (s) => s.estado !== "cerrada"
   );
-  const subcuentaIds = (subcuentas ?? []).map((s) => s.id);
+  const subcuentaIdsPorCuenta = new Map<string, string[]>();
+  for (const s of subcuentasPendientes) {
+    const lista = subcuentaIdsPorCuenta.get(s.cuenta_id) ?? [];
+    lista.push(s.id);
+    subcuentaIdsPorCuenta.set(s.cuenta_id, lista);
+  }
+  const subcuentaIds = subcuentasPendientes.map((s) => s.id);
 
   const { data: items } = subcuentaIds.length
     ? await supabase
@@ -65,7 +74,8 @@ export default async function CajaHomePage() {
     totalPorSubcuenta.set(item.subcuenta_id, actual + calcularTotalItem(item));
   }
 
-  const efectivoEsperado = jornada.base_caja_inicial + resumen.efectivo;
+  const efectivoEsperado =
+    jornada.base_caja_inicial + resumen.efectivo - resumen.gastos;
 
   return (
     <div className="flex flex-col gap-6">
@@ -101,10 +111,11 @@ export default async function CajaHomePage() {
           </form>
         )}
 
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
           <Resumen label="Efectivo" valor={resumen.efectivo} />
           <Resumen label="Transferencia" valor={resumen.transferencia} />
           <Resumen label="Fiado" valor={resumen.fiado} />
+          <Resumen label="Gastos" valor={resumen.gastos} />
           <Resumen label="Total cobrado" valor={resumen.total} />
         </div>
 
@@ -146,10 +157,11 @@ export default async function CajaHomePage() {
         {cuentasAbiertas?.length ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {cuentasAbiertas.map((cuenta) => {
-              const subcuentaId = subcuentaPorCuenta.get(cuenta.id);
-              const total = subcuentaId
-                ? totalPorSubcuenta.get(subcuentaId) ?? 0
-                : 0;
+              const idsSubcuentasCuenta = subcuentaIdsPorCuenta.get(cuenta.id) ?? [];
+              const total = idsSubcuentasCuenta.reduce(
+                (acc, id) => acc + (totalPorSubcuenta.get(id) ?? 0),
+                0
+              );
               return (
                 <Card key={cuenta.id}>
                   <p className="font-semibold text-white">
@@ -157,6 +169,8 @@ export default async function CajaHomePage() {
                   </p>
                   <p className="text-xs text-white/50">
                     {cuenta.tipo === "mesa" ? "Mesa" : "Barra"}
+                    {idsSubcuentasCuenta.length > 1 &&
+                      ` · ${idsSubcuentasCuenta.length} sub-cuentas`}
                   </p>
                   <p className="mt-2 text-xl font-bold text-perla-dorado">
                     ${total.toLocaleString("es-CO")}

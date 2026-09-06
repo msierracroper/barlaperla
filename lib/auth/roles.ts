@@ -47,9 +47,16 @@ export const getUsuarioActual = cache(async (): Promise<UsuarioActual | null> =>
 
 /**
  * Chequeo de autorizacion "seguro" (contra la base de datos, no solo la
- * cookie de sesion) para usar en layouts/paginas de cada area por rol.
+ * cookie de sesion) para usar en layouts/paginas de cada area por rol, y
+ * dentro de Server Actions para la regla de negocio de esa accion puntual.
  * El proxy solo hace el chequeo optimista de "hay sesion"; este es el
- * que decide si ESE usuario puede entrar a ESA area.
+ * que decide si ESE usuario puede entrar a ESA area / hacer ESA accion.
+ *
+ * Admin siempre pasa, sea cual sea el rol pedido ("Administrador: acceso
+ * total" segun el alcance) -- salvo que la propia Server Action necesite
+ * una regla mas estricta que solo admin (ej. cancelar una cuenta completa),
+ * en cuyo caso se llama requireRol("admin") directamente, que no se ve
+ * afectado por este fallback.
  */
 export async function requireRol(rol: RolTipo): Promise<UsuarioActual> {
   const usuario = await getUsuarioActual();
@@ -58,7 +65,8 @@ export async function requireRol(rol: RolTipo): Promise<UsuarioActual> {
     redirect("/login");
   }
 
-  if (!usuario.roles.includes(rol)) {
+  const autorizado = usuario.roles.includes(rol) || usuario.roles.includes("admin");
+  if (!autorizado) {
     redirect("/no-autorizado");
   }
 

@@ -35,7 +35,8 @@ export async function cerrarJornada(jornadaId: string, formData: FormData) {
   if (!jornada) return;
 
   const resumen = await calcularResumenCaja(jornadaId);
-  const efectivoEsperado = jornada.base_caja_inicial + resumen.efectivo;
+  const efectivoEsperado =
+    jornada.base_caja_inicial + resumen.efectivo - resumen.gastos;
 
   await supabase
     .from("jornadas")

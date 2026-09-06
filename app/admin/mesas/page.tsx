@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
-import { inputClass, buttonPrimaryClass, linkButtonClass } from "@/components/ui/form-controls";
+import { inputClass, buttonPrimaryClass, buttonSecondaryClass } from "@/components/ui/form-controls";
 import { crearMesa, toggleMesaActiva, actualizarMesa } from "./actions";
 
 export default async function MesasPage() {
@@ -56,7 +56,7 @@ export default async function MesasPage() {
                       defaultValue={mesa.numero}
                       className={`${inputClass} w-32 py-1`}
                     />
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       Guardar
                     </button>
                   </form>
@@ -74,7 +74,7 @@ export default async function MesasPage() {
                   <form
                     action={toggleMesaActiva.bind(null, mesa.id, !mesa.activa)}
                   >
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       {mesa.activa ? "Desactivar" : "Activar"}
                     </button>
                   </form>

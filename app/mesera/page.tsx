@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
 import { UbicacionBoton } from "@/components/mesera/ubicacion-boton";
-import { abrirCuentaMesa, abrirCuentaSilla } from "./actions";
 
 export default async function MeseraHomePage() {
   const usuario = await requireRol("mesera");
@@ -29,6 +28,9 @@ export default async function MeseraHomePage() {
         .eq("estado", "abierta"),
     ]);
 
+  // Ahora una cuenta solo existe una vez que la mesera confirmo un pedido
+  // (ver app/mesera/nuevo), asi que "abierta" ya implica que tiene contenido
+  // real -- no hace falta filtrar por si tiene items o no.
   const idsAbiertas = (cuentasAbiertas ?? []).map((c) => c.id);
 
   const { data: ubicaciones } = idsAbiertas.length
@@ -70,7 +72,7 @@ export default async function MeseraHomePage() {
                 key={mesa.id}
                 etiqueta={mesa.numero}
                 cuentaId={cuentaPorMesa.get(mesa.id) ?? null}
-                accion={abrirCuentaMesa.bind(null, mesa.id)}
+                hrefLibre={`/mesera/nuevo?tipo=mesa&ubicacionId=${mesa.id}&etiqueta=${encodeURIComponent(mesa.numero)}`}
               />
             ))}
           </div>
@@ -94,7 +96,7 @@ export default async function MeseraHomePage() {
                   key={silla.id}
                   etiqueta={silla.numero}
                   cuentaId={cuentaPorSilla.get(silla.id) ?? null}
-                  accion={abrirCuentaSilla.bind(null, silla.id)}
+                  hrefLibre={`/mesera/nuevo?tipo=barra&ubicacionId=${silla.id}&etiqueta=${encodeURIComponent(`${barra.nombre} · Silla ${silla.numero}`)}`}
                 />
               ))}
           </div>

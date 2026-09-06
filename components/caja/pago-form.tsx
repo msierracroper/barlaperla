@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { registrarPago } from "@/app/caja/cuentas/[cuentaId]/actions";
-import { inputClass, buttonPrimaryClass } from "@/components/ui/form-controls";
+import { inputClass, selectClass, buttonPrimaryClass } from "@/components/ui/form-controls";
 import { MoneyInput } from "@/components/ui/money-input";
 import type { MetodoPago } from "@/types/database.types";
 
@@ -11,21 +11,35 @@ const METODOS: { value: MetodoPago; label: string }[] = [
   { value: "efectivo", label: "$ Efectivo" },
   { value: "transferencia", label: "⇄ Transferencia" },
   { value: "mixto", label: "◐ Mixto" },
+  { value: "fiado", label: "✎ Fiado" },
 ];
+
+const NUEVO_CLIENTE = "__nuevo__";
+
+export interface ClienteFiadoOpcion {
+  id: string;
+  nombre: string;
+  telefono: string | null;
+}
 
 export function PagoForm({
   cuentaId,
   subcuentaId,
   total,
+  clientesFiado = [],
 }: {
   cuentaId: string;
   subcuentaId: string;
   total: number;
+  clientesFiado?: ClienteFiadoOpcion[];
 }) {
   const router = useRouter();
   const [metodo, setMetodo] = useState<MetodoPago>("efectivo");
   const [efectivoRecibidoStr, setEfectivoRecibidoStr] = useState(String(total));
   const [efectivoMixtoStr, setEfectivoMixtoStr] = useState(String(total));
+  const [clienteId, setClienteId] = useState("");
+  const [nombreNuevo, setNombreNuevo] = useState("");
+  const [telefonoNuevo, setTelefonoNuevo] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -45,6 +59,9 @@ export function PagoForm({
     if (metodo === "transferencia") {
       return { montoEfectivo: 0, montoTransferencia: total, cambio: 0, faltante: 0 };
     }
+    if (metodo === "fiado") {
+      return { montoEfectivo: 0, montoTransferencia: 0, cambio: 0, faltante: 0 };
+    }
     const efectivo = Math.min(Math.max(0, efectivoMixto), total);
     return {
       montoEfectivo: efectivo,
@@ -54,7 +71,12 @@ export function PagoForm({
     };
   }, [metodo, efectivoRecibido, efectivoMixto, total]);
 
-  const puedeCobrar = metodo !== "efectivo" || faltante === 0;
+  const clienteValido =
+    metodo !== "fiado" ||
+    (clienteId && clienteId !== NUEVO_CLIENTE) ||
+    (clienteId === NUEVO_CLIENTE && nombreNuevo.trim().length > 0);
+
+  const puedeCobrar = (metodo !== "efectivo" || faltante === 0) && clienteValido;
 
   function confirmar() {
     setError(null);
@@ -65,8 +87,14 @@ export function PagoForm({
           montoEfectivo,
           montoTransferencia,
           montoTotal: total,
+          fiado:
+            metodo === "fiado"
+              ? clienteId === NUEVO_CLIENTE
+                ? { clienteNuevo: { nombre: nombreNuevo, telefono: telefonoNuevo } }
+                : { clienteFiadoId: clienteId }
+              : undefined,
         });
-        router.push("/caja");
+        router.refresh();
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "No se pudo registrar el pago."
@@ -142,6 +170,49 @@ export function PagoForm({
         </div>
       )}
 
+      {metodo === "fiado" && (
+        <div className="flex flex-col gap-2">
+          <p className="rounded-md bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
+            Se fía el total (${total.toLocaleString("es-CO")}). No entra a
+            caja hasta que el cliente abone.
+          </p>
+          <label className="flex flex-col gap-1 text-sm text-white/70">
+            Cliente
+            <select
+              value={clienteId}
+              onChange={(e) => setClienteId(e.target.value)}
+              className={selectClass}
+            >
+              <option value="">Selecciona un cliente</option>
+              {clientesFiado.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                  {c.telefono ? ` · ${c.telefono}` : ""}
+                </option>
+              ))}
+              <option value={NUEVO_CLIENTE}>+ Nuevo cliente</option>
+            </select>
+          </label>
+          {clienteId === NUEVO_CLIENTE && (
+            <div className="flex flex-col gap-2">
+              <input
+                autoFocus
+                value={nombreNuevo}
+                onChange={(e) => setNombreNuevo(e.target.value)}
+                placeholder="Nombre del cliente"
+                className={inputClass}
+              />
+              <input
+                value={telefonoNuevo}
+                onChange={(e) => setTelefonoNuevo(e.target.value)}
+                placeholder="Teléfono (opcional)"
+                className={inputClass}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
       {error && (
         <p className="text-sm text-red-400" role="alert">
           {error}
@@ -155,8 +226,10 @@ export function PagoForm({
         className={buttonPrimaryClass}
       >
         {pending
-          ? "Cobrando..."
-          : `Registrar pago y cerrar · $${total.toLocaleString("es-CO")}`}
+          ? "Guardando..."
+          : metodo === "fiado"
+            ? `Registrar fiado y cerrar · $${total.toLocaleString("es-CO")}`
+            : `Registrar pago y cerrar · $${total.toLocaleString("es-CO")}`}
       </button>
     </div>
   );

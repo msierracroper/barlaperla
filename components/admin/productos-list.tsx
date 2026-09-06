@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import {
   crearProducto,
   actualizarProducto,
@@ -9,7 +10,12 @@ import {
 } from "@/app/admin/productos/actions";
 import { Switch } from "@/components/ui/switch";
 import { MoneyInput } from "@/components/ui/money-input";
-import { inputClass, selectClass, buttonPrimaryClass } from "@/components/ui/form-controls";
+import {
+  inputClass,
+  selectClass,
+  buttonPrimaryClass,
+  buttonSecondaryClass,
+} from "@/components/ui/form-controls";
 import type { ControlInventarioTipo } from "@/types/database.types";
 
 interface Producto {
@@ -18,6 +24,7 @@ interface Producto {
   precio_venta: number;
   categoria_id: string | null;
   control_inventario: ControlInventarioTipo;
+  licor_base_id: string | null;
   stock_minimo: number | null;
   activo: boolean;
   categorias_producto: { nombre: string } | null;
@@ -28,10 +35,16 @@ interface Categoria {
   nombre: string;
 }
 
+interface Licor {
+  id: string;
+  nombre: string;
+}
+
 const ETIQUETA_CONTROL: Record<ControlInventarioTipo, string> = {
   simple: "Simple",
   licor_multiuso: "Licor",
   receta: "Receta",
+  shot_de_licor: "Shot",
 };
 
 const TAB_TODOS = "__todos__";
@@ -39,9 +52,11 @@ const TAB_TODOS = "__todos__";
 export function ProductosList({
   productos,
   categorias,
+  licores,
 }: {
   productos: Producto[];
   categorias: Categoria[];
+  licores: Licor[];
 }) {
   const [tabActiva, setTabActiva] = useState(TAB_TODOS);
   const [modal, setModal] = useState<"crear" | Producto | null>(null);
@@ -126,6 +141,14 @@ export function ProductosList({
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {producto.control_inventario === "receta" && (
+                <Link
+                  href={`/admin/productos/${producto.id}/receta`}
+                  className={buttonSecondaryClass}
+                >
+                  Receta
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => setModal(producto)}
@@ -153,6 +176,7 @@ export function ProductosList({
         <ProductoModal
           producto={modal === "crear" ? null : modal}
           categorias={categorias}
+          licores={licores}
           onClose={() => setModal(null)}
         />
       )}
@@ -163,10 +187,12 @@ export function ProductosList({
 function ProductoModal({
   producto,
   categorias,
+  licores,
   onClose,
 }: {
   producto: Producto | null;
   categorias: Categoria[];
+  licores: Licor[];
   onClose: () => void;
 }) {
   const [nombre, setNombre] = useState(producto?.nombre ?? "");
@@ -175,6 +201,7 @@ function ProductoModal({
   const [control, setControl] = useState<ControlInventarioTipo>(
     producto?.control_inventario ?? "simple"
   );
+  const [licorBaseId, setLicorBaseId] = useState(producto?.licor_base_id ?? "");
   const [stockMinimoStr, setStockMinimoStr] = useState(
     String(producto?.stock_minimo ?? 0)
   );
@@ -189,6 +216,7 @@ function ProductoModal({
       categoriaId: categoriaId || null,
       precioVenta: Number(precioStr) || 0,
       controlInventario: control,
+      licorBaseId: control === "shot_de_licor" ? licorBaseId || null : null,
       stockMinimo: Number(stockMinimoStr) || 0,
       activo,
     };
@@ -263,25 +291,48 @@ function ProductoModal({
 
           <div>
             <p className="mb-1 text-sm text-white/70">Tipo de control</p>
-            <div className="grid grid-cols-3 gap-2">
-              {(["simple", "licor_multiuso", "receta"] as ControlInventarioTipo[]).map(
-                (tipo) => (
-                  <button
-                    key={tipo}
-                    type="button"
-                    onClick={() => setControl(tipo)}
-                    className={`rounded-md border px-2 py-2 text-xs transition ${
-                      control === tipo
-                        ? "border-perla-dorado bg-perla-dorado/15 text-perla-dorado"
-                        : "border-white/10 bg-white/5 text-white/60 hover:bg-white/10"
-                    }`}
-                  >
-                    {ETIQUETA_CONTROL[tipo]}
-                  </button>
-                )
-              )}
+            <div className="grid grid-cols-4 gap-2">
+              {(
+                ["simple", "licor_multiuso", "receta", "shot_de_licor"] as ControlInventarioTipo[]
+              ).map((tipo) => (
+                <button
+                  key={tipo}
+                  type="button"
+                  onClick={() => setControl(tipo)}
+                  className={`rounded-md border px-2 py-2 text-xs transition ${
+                    control === tipo
+                      ? "border-perla-dorado bg-perla-dorado/15 text-perla-dorado"
+                      : "border-white/10 bg-white/5 text-white/60 hover:bg-white/10"
+                  }`}
+                >
+                  {ETIQUETA_CONTROL[tipo]}
+                </button>
+              ))}
             </div>
           </div>
+
+          {control === "shot_de_licor" && (
+            <label className="flex flex-col gap-1 text-sm text-white/70">
+              Licor base (a qué botella descuenta)
+              <select
+                value={licorBaseId}
+                onChange={(e) => setLicorBaseId(e.target.value)}
+                className={selectClass}
+              >
+                <option value="">Selecciona un licor</option>
+                {licores.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.nombre}
+                  </option>
+                ))}
+              </select>
+              {!licores.length && (
+                <span className="text-xs text-amber-400">
+                  No hay productos tipo &quot;Licor&quot; creados todavía.
+                </span>
+              )}
+            </label>
+          )}
 
           <label className="flex flex-col gap-1 text-sm text-white/70">
             Stock mínimo (opcional)

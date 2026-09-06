@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
-import { inputClass, buttonPrimaryClass, linkButtonClass } from "@/components/ui/form-controls";
+import { inputClass, buttonPrimaryClass, buttonSecondaryClass } from "@/components/ui/form-controls";
 import { crearSilla, toggleSillaActiva, actualizarSilla } from "../actions";
 
 export default async function BarraDetallePage({
@@ -77,7 +77,7 @@ export default async function BarraDetallePage({
                       defaultValue={silla.numero}
                       className={`${inputClass} w-24 py-1`}
                     />
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       Guardar
                     </button>
                   </form>
@@ -100,7 +100,7 @@ export default async function BarraDetallePage({
                       !silla.activa
                     )}
                   >
-                    <button type="submit" className={linkButtonClass}>
+                    <button type="submit" className={buttonSecondaryClass}>
                       {silla.activa ? "Desactivar" : "Activar"}
                     </button>
                   </form>

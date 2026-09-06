@@ -27,7 +27,11 @@ export type CuentaEstado =
   | "cerrada"
   | "anulada";
 export type SubcuentaEstado = "abierta" | "cerrada";
-export type ControlInventarioTipo = "simple" | "licor_multiuso" | "receta";
+export type ControlInventarioTipo =
+  | "simple"
+  | "licor_multiuso"
+  | "receta"
+  | "shot_de_licor";
 export type BotellaEstado =
   | "cerrada"
   | "abierta_shots"
@@ -341,6 +345,7 @@ export interface Database {
           precio_venta: number;
           costo_promedio: number;
           control_inventario: ControlInventarioTipo;
+          licor_base_id: string | null;
           stock_minimo: number | null;
           activo: boolean;
           created_at: string;
@@ -353,6 +358,7 @@ export interface Database {
           precio_venta: number;
           costo_promedio?: number;
           control_inventario?: ControlInventarioTipo;
+          licor_base_id?: string | null;
           stock_minimo?: number | null;
           activo?: boolean;
           created_at?: string;
@@ -365,6 +371,7 @@ export interface Database {
           precio_venta?: number;
           costo_promedio?: number;
           control_inventario?: ControlInventarioTipo;
+          licor_base_id?: string | null;
           stock_minimo?: number | null;
           activo?: boolean;
           created_at?: string;
@@ -375,6 +382,13 @@ export interface Database {
             columns: ["categoria_id"];
             isOneToOne: false;
             referencedRelation: "categorias_producto";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "productos_licor_base_id_fkey";
+            columns: ["licor_base_id"];
+            isOneToOne: false;
+            referencedRelation: "productos";
             referencedColumns: ["id"];
           },
         ];
@@ -702,6 +716,8 @@ export interface Database {
           id: string;
           fiado_id: string;
           monto: number;
+          metodo: MetodoPago;
+          jornada_id: string;
           registrado_por: string;
           created_at: string;
         };
@@ -709,6 +725,8 @@ export interface Database {
           id?: string;
           fiado_id: string;
           monto: number;
+          metodo?: MetodoPago;
+          jornada_id: string;
           registrado_por: string;
           created_at?: string;
         };
@@ -716,6 +734,8 @@ export interface Database {
           id?: string;
           fiado_id?: string;
           monto?: number;
+          metodo?: MetodoPago;
+          jornada_id?: string;
           registrado_por?: string;
           created_at?: string;
         };
@@ -803,6 +823,51 @@ export interface Database {
       jornada_activa: {
         Args: { p_sede_id: string };
         Returns: Database["public"]["Tables"]["jornadas"]["Row"];
+      };
+      registrar_movimiento_stock_simple: {
+        Args: {
+          p_producto_id: string;
+          p_delta: number;
+          p_tipo: MovimientoTipo;
+          p_referencia_id: string | null;
+        };
+        Returns: undefined;
+      };
+      vender_botella_completa: {
+        Args: {
+          p_producto_id: string;
+          p_cantidad: number;
+          p_referencia_id: string | null;
+        };
+        Returns: undefined;
+      };
+      reponer_botella_completa: {
+        Args: { p_referencia_id: string };
+        Returns: undefined;
+      };
+      vender_shot: {
+        Args: {
+          p_licor_base_id: string;
+          p_ml: number;
+          p_referencia_id: string | null;
+        };
+        Returns: undefined;
+      };
+      reponer_shot: {
+        Args: { p_referencia_id: string };
+        Returns: undefined;
+      };
+      vender_coctel: {
+        Args: {
+          p_producto_coctel_id: string;
+          p_cantidad: number;
+          p_referencia_id: string | null;
+        };
+        Returns: undefined;
+      };
+      reponer_coctel: {
+        Args: { p_referencia_id: string };
+        Returns: undefined;
       };
     };
     Enums: {

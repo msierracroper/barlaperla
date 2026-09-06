@@ -10,6 +10,8 @@ const ENLACES = [
   { href: "/admin/categorias", label: "Categorías" },
   { href: "/admin/productos", label: "Productos" },
   { href: "/admin/usuarios", label: "Usuarios" },
+  { href: "/admin/pedidos", label: "Pedidos" },
+  { href: "/admin/inventario", label: "Inventario" },
 ];
 
 export function AdminNav() {

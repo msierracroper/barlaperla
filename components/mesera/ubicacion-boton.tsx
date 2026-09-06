@@ -3,11 +3,11 @@ import Link from "next/link";
 export function UbicacionBoton({
   etiqueta,
   cuentaId,
-  accion,
+  hrefLibre,
 }: {
   etiqueta: string;
   cuentaId: string | null;
-  accion: () => Promise<void>;
+  hrefLibre: string;
 }) {
   if (cuentaId) {
     return (
@@ -22,14 +22,12 @@ export function UbicacionBoton({
   }
 
   return (
-    <form action={accion}>
-      <button
-        type="submit"
-        className="w-full rounded-lg border border-white/10 bg-perla-azul p-3 text-center transition hover:border-perla-dorado/60"
-      >
-        <p className="font-semibold text-white">{etiqueta}</p>
-        <p className="text-[11px] text-white/40">Libre</p>
-      </button>
-    </form>
+    <Link
+      href={hrefLibre}
+      className="block rounded-lg border border-white/10 bg-perla-azul p-3 text-center transition hover:border-perla-dorado/60"
+    >
+      <p className="font-semibold text-white">{etiqueta}</p>
+      <p className="text-[11px] text-white/40">Libre</p>
+    </Link>
   );
 }

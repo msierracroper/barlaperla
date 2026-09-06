@@ -46,6 +46,13 @@ const MODULOS: Modulo[] = [
     disponible: true,
   },
   {
+    href: "/admin/pedidos",
+    icon: "🧾",
+    titulo: "Pedidos",
+    descripcion: "Ver, editar, marcar listo/entregado o cancelar",
+    disponible: true,
+  },
+  {
     href: "/admin/gastos",
     icon: "💸",
     titulo: "Gastos",
@@ -58,8 +65,7 @@ const MODULOS: Modulo[] = [
     icon: "📦",
     titulo: "Inventario",
     descripcion: "Controlar insumos y alertas de stock bajo",
-    disponible: false,
-    fase: "Fase 3",
+    disponible: true,
   },
   {
     href: "/admin/reportes",
