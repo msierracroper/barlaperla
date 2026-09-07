@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { requireRol } from "@/lib/auth/roles";
+import { obtenerResumenDashboard } from "@/lib/dashboard";
+import { buttonSecondaryClass } from "@/components/ui/form-controls";
 
 interface Modulo {
   href: string;
@@ -53,14 +56,6 @@ const MODULOS: Modulo[] = [
     disponible: true,
   },
   {
-    href: "/admin/gastos",
-    icon: "💸",
-    titulo: "Gastos",
-    descripcion: "Registrar y controlar gastos del negocio",
-    disponible: false,
-    fase: "Fase 2",
-  },
-  {
     href: "/admin/inventario",
     icon: "📦",
     titulo: "Inventario",
@@ -71,20 +66,54 @@ const MODULOS: Modulo[] = [
     href: "/admin/reportes",
     icon: "📊",
     titulo: "Reportes",
-    descripcion: "Ver resumen del día y utilidades",
-    disponible: false,
-    fase: "Fase 4",
+    descripcion: "Ventas, productos, meseros, utilidades y más",
+    disponible: true,
   },
 ];
 
-const KPIS = [
-  { label: "Total vendido", valor: "$0", nota: "0 cuentas cerradas" },
-  { label: "Efectivo", valor: "$0", nota: "0% del total" },
-  { label: "Transferencia", valor: "$0", nota: "0% del total" },
-  { label: "Fiado pendiente", valor: "$0", nota: "0 cuentas" },
-];
+function Kpi({
+  label,
+  valor,
+  nota,
+}: {
+  label: string;
+  valor: string;
+  nota?: string;
+}) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-perla-azul p-3 sm:p-5">
+      <p className="text-xs text-white/60 sm:text-sm">{label}</p>
+      <p className="mt-1 text-xl font-bold text-perla-dorado sm:text-2xl">
+        {valor}
+      </p>
+      {nota && <p className="mt-1 text-[11px] text-white/40 sm:text-xs">{nota}</p>}
+    </div>
+  );
+}
 
-export default function AdminHomePage() {
+export default async function AdminHomePage() {
+  const usuario = await requireRol("admin");
+
+  if (!usuario.sedeId) {
+    return <p className="text-white/70">Tu usuario no tiene una sede asignada.</p>;
+  }
+
+  const {
+    fechaOperativa,
+    resumen,
+    ubicacionesOcupadas,
+    fiadosPendientes,
+    topProductos,
+    alertasInventario,
+    utilidadEstimada,
+    totalSemanaAnterior,
+  } = await obtenerResumenDashboard(usuario.sedeId);
+
+  const variacionSemana =
+    totalSemanaAnterior && totalSemanaAnterior > 0
+      ? ((resumen.total - totalSemanaAnterior) / totalSemanaAnterior) * 100
+      : null;
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -132,28 +161,92 @@ export default function AdminHomePage() {
 
       <div>
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-white/50">
-          Hoy en el local
+          Resumen del día · {fechaOperativa}
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {KPIS.map((kpi) => (
-            <div
-              key={kpi.label}
-              className="rounded-lg border border-white/10 bg-perla-azul p-3 sm:p-5"
-            >
-              <p className="text-xs text-white/60 sm:text-sm">{kpi.label}</p>
-              <p className="mt-1 text-xl font-bold text-perla-dorado sm:text-2xl">
-                {kpi.valor}
-              </p>
-              <p className="mt-1 text-[11px] text-white/40 sm:text-xs">
-                {kpi.nota}
-              </p>
-            </div>
-          ))}
+          <Kpi
+            label="Venta total"
+            valor={`$${resumen.total.toLocaleString("es-CO")}`}
+            nota={
+              variacionSemana !== null
+                ? `${variacionSemana >= 0 ? "+" : ""}${variacionSemana.toFixed(0)}% vs. semana pasada`
+                : "Sin dato de la semana pasada"
+            }
+          />
+          <Kpi
+            label="Utilidad estimada"
+            valor={`$${utilidadEstimada.toLocaleString("es-CO")}`}
+            nota="Venta - costo - gastos"
+          />
+          <Kpi
+            label="Mesas / barras abiertas"
+            valor={`${ubicacionesOcupadas.mesas + ubicacionesOcupadas.barras}`}
+            nota={`${ubicacionesOcupadas.mesas} mesas · ${ubicacionesOcupadas.barras} barras`}
+          />
+          <Kpi
+            label="Fiados pendientes"
+            valor={`$${fiadosPendientes.monto.toLocaleString("es-CO")}`}
+            nota={`${fiadosPendientes.cantidad} cuenta${fiadosPendientes.cantidad === 1 ? "" : "s"}`}
+          />
+          <Kpi label="Efectivo" valor={`$${resumen.efectivo.toLocaleString("es-CO")}`} />
+          <Kpi label="Transferencia" valor={`$${resumen.transferencia.toLocaleString("es-CO")}`} />
+          <Kpi label="Fiado (hoy)" valor={`$${resumen.fiado.toLocaleString("es-CO")}`} />
+          <Kpi label="Gastos" valor={`$${resumen.gastos.toLocaleString("es-CO")}`} />
         </div>
-        <p className="mt-3 text-xs text-white/40">
-          Se llena automáticamente cuando la operación de mesera / cajero
-          esté activa.
-        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="rounded-lg border border-white/10 bg-perla-azul p-4">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
+            Top 5 productos de hoy
+          </h3>
+          {topProductos.length ? (
+            <div className="flex flex-col gap-2">
+              {topProductos.map((p, i) => (
+                <div key={p.nombre} className="flex items-center justify-between text-sm">
+                  <span className="text-white/80">
+                    {i + 1}. {p.nombre}
+                  </span>
+                  <span className="font-semibold text-perla-dorado">{p.cantidad}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-white/50">Todavía no hay ventas hoy.</p>
+          )}
+        </div>
+
+        <div className="rounded-lg border border-white/10 bg-perla-azul p-4">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
+            Alertas de inventario
+          </h3>
+          <div className="flex flex-col gap-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-white/80">Agotados</span>
+              <span
+                className={`font-semibold ${alertasInventario.agotados ? "text-red-400" : "text-white/40"}`}
+              >
+                {alertasInventario.agotados}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white/80">Stock bajo</span>
+              <span
+                className={`font-semibold ${alertasInventario.bajos ? "text-amber-400" : "text-white/40"}`}
+              >
+                {alertasInventario.bajos}
+              </span>
+            </div>
+          </div>
+          {(alertasInventario.agotados > 0 || alertasInventario.bajos > 0) && (
+            <Link
+              href="/admin/inventario"
+              className={`${buttonSecondaryClass} mt-3 inline-block`}
+            >
+              Ver inventario
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );

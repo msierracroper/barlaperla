@@ -6,8 +6,9 @@ import { etiquetasPorCuenta } from "@/lib/ubicaciones";
 import { calcularTotalItem } from "@/lib/precio";
 import { calcularResumenCaja } from "@/lib/caja";
 import { Card } from "@/components/ui/card";
-import { inputClass, buttonPrimaryClass } from "@/components/ui/form-controls";
-import { actualizarBaseCaja, cerrarJornada } from "./actions";
+import { buttonPrimaryClass } from "@/components/ui/form-controls";
+import { BaseCajaForm } from "@/components/caja/base-caja-form";
+import { CerrarJornadaForm } from "@/components/caja/cerrar-jornada-form";
 
 function Resumen({ label, valor }: { label: string; valor: number }) {
   return (
@@ -90,25 +91,9 @@ export default async function CajaHomePage() {
         </div>
 
         {jornada.estado === "abierta" && (
-          <form
-            action={actualizarBaseCaja.bind(null, jornada.id)}
-            className="mt-4 flex flex-wrap items-end gap-2"
-          >
-            <label className="flex flex-col gap-1 text-sm text-white/70">
-              Base de caja inicial
-              <input
-                name="base_caja_inicial"
-                type="number"
-                min="0"
-                step="1"
-                defaultValue={jornada.base_caja_inicial}
-                className={`${inputClass} w-40`}
-              />
-            </label>
-            <button type="submit" className={buttonPrimaryClass}>
-              Guardar base
-            </button>
-          </form>
+          <div className="mt-4">
+            <BaseCajaForm jornadaId={jornada.id} baseActual={jornada.base_caja_inicial} />
+          </div>
         )}
 
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
@@ -120,28 +105,9 @@ export default async function CajaHomePage() {
         </div>
 
         {jornada.estado === "abierta" ? (
-          <form
-            action={cerrarJornada.bind(null, jornada.id)}
-            className="mt-4 flex flex-wrap items-end gap-2 border-t border-white/10 pt-4"
-          >
-            <label className="flex flex-col gap-1 text-sm text-white/70">
-              Efectivo contado (arqueo)
-              <input
-                name="efectivo_contado"
-                type="number"
-                min="0"
-                step="1"
-                required
-                className={`${inputClass} w-40`}
-              />
-            </label>
-            <p className="text-xs text-white/50">
-              Esperado: ${efectivoEsperado.toLocaleString("es-CO")}
-            </p>
-            <button type="submit" className={buttonPrimaryClass}>
-              Cerrar jornada
-            </button>
-          </form>
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <CerrarJornadaForm jornadaId={jornada.id} efectivoEsperado={efectivoEsperado} />
+          </div>
         ) : (
           <p className="mt-4 border-t border-white/10 pt-4 text-sm text-white/60">
             Jornada cerrada. Diferencia de caja: $

@@ -5,10 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRol } from "@/lib/auth/roles";
 import { calcularResumenCaja } from "@/lib/caja";
 
-export async function actualizarBaseCaja(jornadaId: string, formData: FormData) {
+export async function actualizarBaseCaja(jornadaId: string, base: number) {
   await requireRol("cajero");
-  const base = Number(formData.get("base_caja_inicial"));
-  if (!Number.isFinite(base) || base < 0) return;
+  if (!Number.isFinite(base) || base < 0) {
+    throw new Error("La base no es válida.");
+  }
 
   const supabase = await createClient();
   await supabase
@@ -19,10 +20,11 @@ export async function actualizarBaseCaja(jornadaId: string, formData: FormData) 
   revalidatePath("/caja");
 }
 
-export async function cerrarJornada(jornadaId: string, formData: FormData) {
+export async function cerrarJornada(jornadaId: string, efectivoContado: number) {
   const usuario = await requireRol("cajero");
-  const efectivoContado = Number(formData.get("efectivo_contado"));
-  if (!Number.isFinite(efectivoContado) || efectivoContado < 0) return;
+  if (!Number.isFinite(efectivoContado) || efectivoContado < 0) {
+    throw new Error("El efectivo contado no es válido.");
+  }
 
   const supabase = await createClient();
 
