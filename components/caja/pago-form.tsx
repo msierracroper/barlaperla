@@ -82,7 +82,7 @@ export function PagoForm({
     setError(null);
     startTransition(async () => {
       try {
-        await registrarPago(cuentaId, subcuentaId, {
+        const { cuentaCerrada } = await registrarPago(cuentaId, subcuentaId, {
           metodo,
           montoEfectivo,
           montoTransferencia,
@@ -94,7 +94,11 @@ export function PagoForm({
                 : { clienteFiadoId: clienteId }
               : undefined,
         });
-        router.refresh();
+        if (cuentaCerrada) {
+          router.push("/caja");
+        } else {
+          router.refresh();
+        }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "No se pudo registrar el pago."

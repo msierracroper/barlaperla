@@ -23,7 +23,7 @@ export async function registrarPago(
   cuentaId: string,
   subcuentaId: string,
   pago: DatosPago
-) {
+): Promise<{ cuentaCerrada: boolean }> {
   const usuario = await requireRol("cajero");
   const { metodo, montoTotal, montoEfectivo, montoTransferencia } = pago;
 
@@ -139,7 +139,9 @@ export async function registrarPago(
     .eq("cuenta_id", cuentaId)
     .neq("estado", "cerrada");
 
-  if (!subcuentasRestantes || subcuentasRestantes.length === 0) {
+  const cuentaCerrada = !subcuentasRestantes || subcuentasRestantes.length === 0;
+
+  if (cuentaCerrada) {
     const { error: errorCuenta } = await supabase
       .from("cuentas")
       .update({ estado: "cerrada", cerrada_at: new Date().toISOString() })
@@ -153,6 +155,8 @@ export async function registrarPago(
   revalidatePath("/caja/fiados");
   revalidatePath("/mesera");
   revalidatePath("/cocina");
+
+  return { cuentaCerrada };
 }
 
 /**
