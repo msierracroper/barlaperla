@@ -83,7 +83,7 @@ export default async function CajaHomePage() {
       <Card>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-perla-dorado">
+            <h2 className="font-display text-xl text-perla-dorado">
               Jornada {jornada.fecha_operativa}
             </h2>
             <p className="text-xs text-white/50">Estado: {jornada.estado}</p>
@@ -138,7 +138,7 @@ export default async function CajaHomePage() {
                     {idsSubcuentasCuenta.length > 1 &&
                       ` · ${idsSubcuentasCuenta.length} sub-cuentas`}
                   </p>
-                  <p className="mt-2 text-xl font-bold text-perla-dorado">
+                  <p className="mt-2 font-display text-xl text-perla-dorado">
                     ${total.toLocaleString("es-CO")}
                   </p>
                   <Link

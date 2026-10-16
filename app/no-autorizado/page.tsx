@@ -3,8 +3,8 @@ import { logout } from "@/lib/auth/actions";
 
 export default function NoAutorizadoPage() {
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-4 bg-perla-azul-deep px-4 text-center text-white">
-      <h1 className="text-2xl font-bold text-perla-dorado">
+    <main className="bg-perla-noche flex min-h-svh flex-col items-center justify-center gap-4 px-4 text-center text-white">
+      <h1 className="font-display text-2xl text-perla-dorado">
         No tienes acceso a esta sección
       </h1>
       <p className="text-white/70">

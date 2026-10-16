@@ -40,7 +40,7 @@ export default async function GastosPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-perla-dorado">Gastos</h2>
+        <h2 className="font-display text-xl text-perla-dorado">Gastos</h2>
         <p className="text-xs text-white/50">
           Jornada {jornada.fecha_operativa} · Total hoy: $
           {totalHoy.toLocaleString("es-CO")}
@@ -58,7 +58,7 @@ export default async function GastosPage() {
         {(gastos ?? []).map((g) => (
           <div
             key={g.id}
-            className="flex items-center justify-between rounded-lg border border-white/10 bg-perla-azul p-3"
+            className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-3"
           >
             <div>
               <p className="text-sm text-white">

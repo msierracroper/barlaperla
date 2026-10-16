@@ -34,7 +34,7 @@ export function TamanoShotInput({
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-perla-azul p-3">
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-3">
       <div>
         <p className="text-sm font-medium text-white">Tamaño del shot</p>
         <p className="text-xs text-white/50">

@@ -149,14 +149,14 @@ export function NuevoPedido({
             <p className="text-xs uppercase tracking-wide text-white/40">
               Resumen
             </p>
-            <h2 className="text-lg font-semibold text-perla-dorado">
+            <h2 className="font-display text-lg text-perla-dorado">
               {etiqueta} · {totalItems} items
             </h2>
           </div>
           <div className="w-9" />
         </div>
 
-        <div className="rounded-lg border border-white/10 bg-perla-azul p-4">
+        <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-4">
           {subcuentas.map((subcuenta) => {
             const lineasSub = lineasConProducto.filter(
               (l) => l.subcuenta === subcuenta
@@ -186,7 +186,7 @@ export function NuevoPedido({
               </div>
             );
           })}
-          <div className="mt-2 flex justify-between border-t border-white/10 pt-3 text-lg font-bold text-perla-dorado">
+          <div className="mt-2 flex justify-between border-t border-white/10 pt-3 font-display text-lg text-perla-dorado">
             <span>Total</span>
             <span>${totalPrecio.toLocaleString("es-CO")}</span>
           </div>
@@ -233,23 +233,23 @@ export function NuevoPedido({
           <p className="text-xs uppercase tracking-wide text-white/40">
             Nuevo pedido
           </p>
-          <h2 className="text-lg font-semibold text-perla-dorado">{etiqueta}</h2>
+          <h2 className="font-display text-lg text-perla-dorado">{etiqueta}</h2>
         </div>
         <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70">
           {totalItems} items
         </span>
       </div>
 
-      <div className="rounded-lg border border-white/10 bg-perla-azul p-3">
+      <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-3">
         <div className="flex flex-wrap items-center gap-1">
           {subcuentas.map((subcuenta) => (
             <button
               key={subcuenta}
               type="button"
               onClick={() => setSubcuentaActiva(subcuenta)}
-              className={`shrink-0 rounded-md px-3 py-1.5 text-sm transition ${
+              className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
                 subcuentaActiva === subcuenta
-                  ? "bg-perla-dorado font-semibold text-perla-azul-deep"
+                  ? "bg-perla-dorado font-semibold text-perla-azul-deep shadow-[0_0_14px_-3px_rgba(242,193,78,0.7)]"
                   : "bg-white/5 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -259,7 +259,7 @@ export function NuevoPedido({
           <button
             type="button"
             onClick={agregarSubcuenta}
-            className="shrink-0 rounded-md border border-dashed border-white/20 px-3 py-1.5 text-sm text-white/60 hover:border-white/40 hover:text-white"
+            className="shrink-0 rounded-full border border-dashed border-white/20 px-3 py-1.5 text-sm text-white/60 hover:border-perla-cian/50 hover:text-white"
           >
             + Cuenta
           </button>
@@ -278,9 +278,9 @@ export function NuevoPedido({
             key={categoria.id}
             type="button"
             onClick={() => setTabActiva(categoria.id)}
-            className={`shrink-0 rounded-md px-3 py-1.5 text-sm transition ${
+            className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
               tabActiva === categoria.id
-                ? "bg-perla-dorado font-semibold text-perla-azul-deep"
+                ? "bg-perla-dorado font-semibold text-perla-azul-deep shadow-[0_0_14px_-3px_rgba(242,193,78,0.7)]"
                 : "bg-white/5 text-white/70 hover:bg-white/10"
             }`}
           >
@@ -330,7 +330,7 @@ export function NuevoPedido({
                   type="button"
                   onClick={() => ajustar(producto.id, 1)}
                   disabled={agotado || enElTope}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-perla-rojo text-white transition hover:brightness-110 disabled:opacity-30"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-perla-magenta to-perla-naranja text-white shadow-[0_0_12px_-3px_rgba(255,77,141,0.7)] transition hover:brightness-110 disabled:opacity-30 disabled:shadow-none"
                 >
                   +
                 </button>
@@ -346,7 +346,7 @@ export function NuevoPedido({
       </div>
 
       {totalItems > 0 && (
-        <div className="sticky bottom-3 flex items-center justify-between gap-3 rounded-lg border border-perla-dorado/40 bg-perla-azul-deep p-3 shadow-lg">
+        <div className="sticky bottom-3 flex items-center justify-between gap-3 rounded-xl border border-perla-dorado/40 bg-perla-azul-deep/90 p-3 shadow-lg backdrop-blur-xl">
           <div className="text-sm text-white">
             <span className="font-semibold">{totalItems}</span> item
             {totalItems === 1 ? "" : "s"} · $

@@ -56,7 +56,7 @@ export function ReportesView({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-perla-dorado">Reportes</h2>
+        <h2 className="font-display text-xl text-perla-dorado">Reportes</h2>
         <p className="text-xs text-white/50">
           {desde === hasta ? desde : `${desde} → ${hasta}`}
         </p>
@@ -244,7 +244,7 @@ function Kpi({ label, valor, nota }: { label: string; valor: string; nota?: stri
   return (
     <div className="rounded-lg border border-white/10 bg-perla-azul p-3 sm:p-4">
       <p className="text-xs text-white/60">{label}</p>
-      <p className="mt-1 text-lg font-bold text-perla-dorado sm:text-xl">{valor}</p>
+      <p className="mt-1 font-display text-lg text-perla-dorado sm:text-xl">{valor}</p>
       {nota && <p className="mt-1 text-[11px] text-white/40">{nota}</p>}
     </div>
   );

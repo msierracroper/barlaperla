@@ -80,7 +80,7 @@ export default async function InventarioPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-perla-dorado">Inventario</h2>
+        <h2 className="font-display text-xl text-perla-dorado">Inventario</h2>
         <p className="text-xs text-white/50">
           Stock actual e ingreso de mercancía nueva.
         </p>
@@ -123,7 +123,7 @@ export default async function InventarioPage() {
 
               <div className="mt-3 flex items-center justify-between text-sm text-white/70">
                 <span>{esSimple ? "Unidades" : "Botellas cerradas"}</span>
-                <span className="text-lg font-bold text-perla-dorado">
+                <span className="font-display text-lg text-perla-dorado">
                   {stockActual.toLocaleString("es-CO")}
                 </span>
               </div>

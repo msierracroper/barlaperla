@@ -39,7 +39,7 @@ export default async function FiadosPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-perla-dorado">
+        <h2 className="font-display text-xl text-perla-dorado">
           Fiados pendientes
         </h2>
         <p className="text-xs text-white/50">
@@ -71,7 +71,7 @@ export default async function FiadosPage() {
                     <span>Abonado</span>
                     <span>${fiado.monto_pagado.toLocaleString("es-CO")}</span>
                   </div>
-                  <div className="flex justify-between text-lg font-bold text-perla-dorado">
+                  <div className="flex justify-between font-display text-lg text-perla-dorado">
                     <span>Saldo</span>
                     <span>${saldo.toLocaleString("es-CO")}</span>
                   </div>

@@ -18,7 +18,7 @@ export default async function BarrasPage() {
   return (
     <div className="flex flex-col gap-6">
       <Card>
-        <h2 className="text-xl font-semibold text-perla-dorado">Barras</h2>
+        <h2 className="font-display text-xl text-perla-dorado">Barras</h2>
         <form action={crearBarra} className="mt-4 flex flex-wrap gap-2">
           <input
             name="nombre"

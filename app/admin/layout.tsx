@@ -10,7 +10,7 @@ export default async function AdminLayout({
   const usuario = await requireRol("admin");
 
   return (
-    <div className="flex min-h-svh flex-col bg-perla-azul-deep text-white">
+    <div className="bg-perla-noche flex min-h-svh flex-col text-white">
       <AreaHeader area="Administración" usuario={usuario} />
       <AdminNav />
       <main className="flex-1 p-4 sm:p-6">{children}</main>

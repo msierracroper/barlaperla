@@ -33,7 +33,7 @@ export default async function BarraDetallePage({
       </Link>
 
       <Card>
-        <h2 className="text-xl font-semibold text-perla-dorado">
+        <h2 className="font-display text-xl text-perla-dorado">
           Sillas de {barra.nombre}
         </h2>
         <form

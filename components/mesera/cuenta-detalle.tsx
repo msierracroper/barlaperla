@@ -112,11 +112,11 @@ export function CuentaDetalle({
           <p className="text-xs uppercase tracking-wide text-white/40">
             Nuevo pedido
           </p>
-          <h2 className="text-lg font-semibold text-perla-dorado">
+          <h2 className="font-display text-lg text-perla-dorado">
             {etiquetaUbicacion}
           </h2>
         </div>
-        <p className="text-lg font-bold text-perla-dorado">
+        <p className="font-display text-lg text-perla-dorado">
           ${totalGeneral.toLocaleString("es-CO")}
         </p>
       </div>

@@ -64,7 +64,7 @@ export default async function MeseraHomePage() {
   return (
     <div className="flex flex-col gap-6">
       <Card>
-        <h2 className="text-xl font-semibold text-perla-dorado">Mesas</h2>
+        <h2 className="font-display text-xl text-perla-dorado">Mesas</h2>
         {mesas?.length ? (
           <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {mesas.map((mesa) => (
@@ -85,7 +85,7 @@ export default async function MeseraHomePage() {
 
       {barras?.map((barra) => (
         <Card key={barra.id}>
-          <h2 className="text-xl font-semibold text-perla-dorado">
+          <h2 className="font-display text-xl text-perla-dorado">
             {barra.nombre}
           </h2>
           <div className="mt-4 grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8">

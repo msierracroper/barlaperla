@@ -50,7 +50,7 @@ export function CambiarUbicacionBoton({
       </button>
 
       {abierto && (
-        <div className="mt-2 rounded-lg border border-white/10 bg-perla-azul p-3">
+        <div className="mt-2 rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-3">
           {libres.length ? (
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
               {libres.map((l) => (

@@ -7,7 +7,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-lg border border-white/10 bg-perla-azul p-6 ${className}`}
+      className={`rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl ${className}`}
     >
       {children}
     </div>

@@ -153,7 +153,7 @@ function TarjetaComanda({
   const [pending, startTransition] = useTransition();
 
   return (
-    <div className="rounded-lg border border-white/10 bg-perla-azul p-4">
+    <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-4">
       <div className="flex items-center justify-between">
         <p className="font-semibold text-white">{comanda.etiqueta}</p>
         <span className="text-xs text-white/40">

@@ -33,7 +33,7 @@ export function CategoriasList({ categorias }: { categorias: Categoria[] }) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-perla-dorado">
+          <h2 className="font-display text-xl text-perla-dorado">
             Categorías
           </h2>
           <p className="text-xs text-white/50">
@@ -53,7 +53,7 @@ export function CategoriasList({ categorias }: { categorias: Categoria[] }) {
         {categorias.map((categoria) => (
           <div
             key={categoria.id}
-            className="flex items-center justify-between rounded-lg border border-white/10 bg-perla-azul p-3"
+            className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-3"
           >
             <p className="font-medium text-white">{categoria.nombre}</p>
             <div className="flex items-center gap-3">
@@ -126,7 +126,7 @@ function CategoriaModal({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4">
       <div className="w-full max-w-sm rounded-t-2xl bg-perla-azul p-5 sm:rounded-2xl">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-perla-dorado">
+          <h3 className="font-display text-lg text-perla-dorado">
             {categoria ? "Editar categoría" : "Nueva categoría"}
           </h3>
           <button

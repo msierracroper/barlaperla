@@ -17,7 +17,9 @@ export function Switch({
       onClick={onChange}
       disabled={disabled}
       className={`relative h-6 w-11 shrink-0 rounded-full transition disabled:opacity-50 ${
-        checked ? "bg-perla-verde-claro" : "bg-white/20"
+        checked
+          ? "bg-perla-cian shadow-[0_0_12px_-1px_rgba(54,224,214,0.7)]"
+          : "bg-white/15"
       }`}
     >
       <span

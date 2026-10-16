@@ -48,7 +48,7 @@ export default async function RecetaProductoPage({
       <Link href="/admin/productos" className="text-sm text-white/60 hover:text-white">
         ← Volver a productos
       </Link>
-      <h2 className="text-xl font-semibold text-perla-dorado">
+      <h2 className="font-display text-xl text-perla-dorado">
         Receta de {producto.nombre}
       </h2>
       <RecetaEditor

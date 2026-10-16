@@ -83,7 +83,7 @@ function Kpi({
   return (
     <div className="rounded-lg border border-white/10 bg-perla-azul p-3 sm:p-5">
       <p className="text-xs text-white/60 sm:text-sm">{label}</p>
-      <p className="mt-1 text-xl font-bold text-perla-dorado sm:text-2xl">
+      <p className="mt-1 font-display text-xl text-perla-dorado sm:text-2xl">
         {valor}
       </p>
       {nota && <p className="mt-1 text-[11px] text-white/40 sm:text-xs">{nota}</p>}
@@ -196,7 +196,7 @@ export default async function AdminHomePage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border border-white/10 bg-perla-azul p-4">
+        <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-4">
           <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
             Top 5 productos de hoy
           </h3>
@@ -216,7 +216,7 @@ export default async function AdminHomePage() {
           )}
         </div>
 
-        <div className="rounded-lg border border-white/10 bg-perla-azul p-4">
+        <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-4">
           <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
             Alertas de inventario
           </h3>

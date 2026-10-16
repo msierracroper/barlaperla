@@ -48,7 +48,7 @@ export function PedidosList({ pedidos }: { pedidos: Pedido[] }) {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h2 className="text-xl font-semibold text-perla-dorado">
+        <h2 className="font-display text-xl text-perla-dorado">
           Control de pedidos
         </h2>
         <p className="text-xs text-white/50">{pedidos.length} pedidos hoy</p>
@@ -87,7 +87,7 @@ export function PedidosList({ pedidos }: { pedidos: Pedido[] }) {
               <p className="mt-1 text-xs text-white/50">
                 {formatearHora(pedido.createdAt)} · {pedido.mesera}
               </p>
-              <p className="mt-2 text-lg font-bold text-perla-dorado">
+              <p className="mt-2 font-display text-lg text-perla-dorado">
                 ${pedido.total.toLocaleString("es-CO")}
               </p>
             </Link>

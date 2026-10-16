@@ -9,7 +9,7 @@ export default async function MeseraLayout({
   const usuario = await requireRol("mesera");
 
   return (
-    <div className="flex min-h-svh flex-col bg-perla-azul-deep text-white">
+    <div className="bg-perla-noche flex min-h-svh flex-col text-white">
       <AreaHeader area="Mesera" usuario={usuario} />
       <main className="flex-1 p-4 sm:p-6">{children}</main>
     </div>

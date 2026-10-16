@@ -17,7 +17,7 @@ export default async function MesasPage() {
   return (
     <div className="flex flex-col gap-6">
       <Card>
-        <h2 className="text-xl font-semibold text-perla-dorado">Mesas</h2>
+        <h2 className="font-display text-xl text-perla-dorado">Mesas</h2>
         <form action={crearMesa} className="mt-4 flex flex-wrap gap-2">
           <input
             name="numero"

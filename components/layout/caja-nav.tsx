@@ -24,9 +24,9 @@ export function CajaNav() {
           <Link
             key={enlace.href}
             href={enlace.href}
-            className={`shrink-0 rounded-md px-3 py-1.5 text-sm transition ${
+            className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
               activo
-                ? "bg-perla-dorado text-perla-azul-deep font-semibold"
+                ? "bg-perla-dorado font-semibold text-perla-azul-deep shadow-[0_0_14px_-3px_rgba(242,193,78,0.7)]"
                 : "text-white/70 hover:bg-white/10"
             }`}
           >

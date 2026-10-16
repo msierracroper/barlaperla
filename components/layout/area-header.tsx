@@ -9,12 +9,12 @@ export function AreaHeader({
   usuario: UsuarioActual;
 }) {
   return (
-    <header className="flex items-center justify-between border-b border-perla-dorado/20 bg-perla-azul px-4 py-3 text-white sm:px-6">
+    <header className="flex items-center justify-between border-b border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl sm:px-6">
       <div>
         <p className="text-xs uppercase tracking-wide text-perla-dorado">
           La Perla Video Bar
         </p>
-        <h1 className="text-lg font-semibold">{area}</h1>
+        <h1 className="font-display text-lg text-white">{area}</h1>
       </div>
       <div className="flex items-center gap-3 text-sm">
         <span className="hidden text-white/70 sm:inline">
@@ -23,7 +23,7 @@ export function AreaHeader({
         <form action={logout}>
           <button
             type="submit"
-            className="rounded-md border border-white/20 px-3 py-1.5 transition hover:bg-white/10"
+            className="rounded-full border border-white/20 px-3 py-1.5 transition hover:border-perla-cian/40 hover:bg-white/10"
           >
             Salir
           </button>

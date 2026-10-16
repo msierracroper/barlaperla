@@ -91,7 +91,7 @@ export default async function CobrarCuentaPage({
         ← Volver
       </Link>
 
-      <h2 className="text-xl font-semibold text-perla-dorado">
+      <h2 className="font-display text-xl text-perla-dorado">
         {etiquetas.get(cuentaId) ?? "Cuenta"}
       </h2>
 
@@ -153,7 +153,7 @@ export default async function CobrarCuentaPage({
               )}
             </div>
 
-            <div className="mt-3 flex justify-between border-t border-white/10 pt-3 text-lg font-bold text-perla-dorado">
+            <div className="mt-3 flex justify-between border-t border-white/10 pt-3 font-display text-lg text-perla-dorado">
               <span>Total</span>
               <span>${total.toLocaleString("es-CO")}</span>
             </div>

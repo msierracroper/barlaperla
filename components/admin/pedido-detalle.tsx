@@ -79,7 +79,7 @@ export function PedidoDetalle({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-perla-dorado">{etiqueta}</h2>
+        <h2 className="font-display text-xl text-perla-dorado">{etiqueta}</h2>
         <p className="text-xs text-white/50">Estado: {estadoCuenta}</p>
       </div>
 
@@ -144,7 +144,7 @@ export function PedidoDetalle({
               )}
             </div>
 
-            <div className="mt-3 flex justify-between border-t border-white/10 pt-3 text-lg font-bold text-perla-dorado">
+            <div className="mt-3 flex justify-between border-t border-white/10 pt-3 font-display text-lg text-perla-dorado">
               <span>Total</span>
               <span>${total.toLocaleString("es-CO")}</span>
             </div>

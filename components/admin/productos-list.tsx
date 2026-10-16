@@ -79,7 +79,7 @@ export function ProductosList({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-perla-dorado">Productos</h2>
+          <h2 className="font-display text-xl text-perla-dorado">Productos</h2>
           <p className="text-xs text-white/50">
             {activos} activos · {inactivos} inactivos
           </p>
@@ -125,7 +125,7 @@ export function ProductosList({
         {visibles.map((producto) => (
           <div
             key={producto.id}
-            className="flex items-center justify-between rounded-lg border border-white/10 bg-perla-azul p-3"
+            className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 backdrop-blur-xl p-3"
           >
             <div>
               <p className="font-medium text-white">{producto.nombre}</p>
@@ -241,7 +241,7 @@ function ProductoModal({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4">
       <div className="w-full max-w-sm rounded-t-2xl bg-perla-azul p-5 sm:rounded-2xl">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-perla-dorado">
+          <h3 className="font-display text-lg text-perla-dorado">
             {producto ? "Editar producto" : "Nuevo producto"}
           </h3>
           <button

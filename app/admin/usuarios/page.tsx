@@ -34,7 +34,7 @@ export default async function UsuariosPage() {
   return (
     <div className="flex flex-col gap-6">
       <Card>
-        <h2 className="text-xl font-semibold text-perla-dorado">Usuarios</h2>
+        <h2 className="font-display text-xl text-perla-dorado">Usuarios</h2>
         <CrearUsuarioForm />
       </Card>
 
