@@ -1,0 +1,156 @@
+{
+  "ok": true,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "filesScanned": 6
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "duration": 23,
+    "samples": [
+      1.278,
+      3.833,
+      6.389,
+      8.944,
+      11.5,
+      14.056,
+      16.611,
+      19.167,
+      21.722
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 0,
+    "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 3,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.9:1; WCAG AA requires 3:1.",
+        "text": "+",
+        "fg": "rgb(255,255,255)",
+        "bg": "rgb(255,100,92)",
+        "ratio": 2.9,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(75,75,75)",
+        "large": true,
+        "selector": "#s2-plus",
+        "dataAttributes": {},
+        "sourceFile": "compositions/scene-2.html",
+        "bbox": {
+          "x": 875,
+          "y": 882,
+          "width": 64,
+          "height": 64
+        },
+        "time": 6.389,
+        "times": [
+          6.389
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.84:1; WCAG AA requires 3:1.",
+        "text": "Enviar a preparación",
+        "fg": "rgb(255,255,255)",
+        "bg": "rgb(255,104,97)",
+        "ratio": 2.84,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(76,76,76)",
+        "large": true,
+        "selector": "#s2-cta",
+        "dataAttributes": {},
+        "sourceFile": "compositions/scene-2.html",
+        "bbox": {
+          "x": 487.921875,
+          "y": 1041.5,
+          "width": 447.078125,
+          "height": 95
+        },
+        "time": 6.389,
+        "times": [
+          6.389
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 2.84:1; WCAG AA requires 3:1.",
+        "text": "Registrar pago y cerrar",
+        "fg": "rgb(255,255,255)",
+        "bg": "rgb(255,104,96)",
+        "ratio": 2.84,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(76,76,76)",
+        "large": true,
+        "selector": "#s3-cta",
+        "dataAttributes": {},
+        "sourceFile": "compositions/scene-3.html",
+        "bbox": {
+          "x": 297,
+          "y": 1130,
+          "width": 486,
+          "height": 95
+        },
+        "time": 11.5,
+        "times": [
+          11.5
+        ]
+      }
+    ],
+    "enabled": true,
+    "samples": [
+      1.278,
+      6.389,
+      11.5,
+      16.611,
+      21.722
+    ],
+    "checked": 42,
+    "passed": 39
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

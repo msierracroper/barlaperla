@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
+      <style>
+        #s2-root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          font-family: "Plus Jakarta Sans", sans-serif;
+          color: #f6f1ff;
+          background: radial-gradient(ellipse 120% 70% at 50% -5%, rgba(255, 77, 141, 0.16), transparent 60%),
+            linear-gradient(170deg, #120a22, #241a44 70%);
+        }
+        #s2-root .phase {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          opacity: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 0 72px;
+        }
+        #s2-root .pill {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 999px;
+          padding: 14px 30px;
+          font-size: 28px;
+          font-weight: 600;
+          color: rgba(246, 241, 255, 0.7);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        #s2-root .pill--active {
+          color: #120a22;
+          background: #f2c14e;
+          border-color: transparent;
+          box-shadow: 0 0 26px -4px rgba(242, 193, 78, 0.75);
+        }
+        #s2-root .btn-cta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          padding: 26px 56px;
+          font-size: 34px;
+          font-weight: 700;
+          color: #fff;
+          background: linear-gradient(135deg, #ff4d8d, #ff8a3d);
+          box-shadow: 0 16px 40px -12px rgba(255, 77, 141, 0.65);
+        }
+        #s2-root .row-glass {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-radius: 18px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          padding: 24px 30px;
+        }
+        #s2-root .s2-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px;
+          width: 100%;
+          max-width: 860px;
+        }
+        #s2-root .mesa-tile {
+          border-radius: 20px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.04);
+          backdrop-filter: blur(16px);
+          padding: 34px 28px;
+          text-align: center;
+        }
+        #s2-root .mesa-tile .mesa-nombre {
+          font-size: 32px;
+          font-weight: 700;
+        }
+        #s2-root .mesa-tile .mesa-estado {
+          margin-top: 10px;
+          font-size: 24px;
+          color: rgba(246, 241, 255, 0.45);
+        }
+        #s2-root .mesa-tile--abierta {
+          border-color: rgba(54, 224, 214, 0.6);
+          background: linear-gradient(135deg, rgba(54, 224, 214, 0.2), rgba(255, 77, 141, 0.1));
+          box-shadow: 0 0 34px -8px rgba(54, 224, 214, 0.6);
+        }
+        #s2-root .mesa-tile--abierta .mesa-estado {
+          color: #36e0d6;
+          font-weight: 700;
+        }
+        #s2-root .s2-order {
+          width: 100%;
+          max-width: 860px;
+        }
+        #s2-root .s2-pills {
+          display: flex;
+          gap: 16px;
+          margin-bottom: 28px;
+        }
+        #s2-root .s2-product {
+          margin-bottom: 20px;
+        }
+        #s2-root .s2-product .nombre {
+          font-size: 32px;
+          font-weight: 600;
+        }
+        #s2-root .s2-product .precio {
+          margin-top: 6px;
+          font-size: 26px;
+          color: rgba(246, 241, 255, 0.5);
+        }
+        #s2-root .stepper {
+          display: flex;
+          align-items: center;
+          gap: 22px;
+        }
+        #s2-root .stepper .btn-minus {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 38px;
+        }
+        #s2-root .stepper .btn-plus {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #ff4d8d, #ff8a3d);
+          box-shadow: 0 0 20px -4px rgba(255, 77, 141, 0.7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 38px;
+          color: #fff;
+        }
+        #s2-root .stepper .qty {
+          font-size: 36px;
+          font-weight: 700;
+          min-width: 56px;
+          text-align: center;
+          font-variant-numeric: tabular-nums;
+        }
+        #s2-root .s2-cart {
+          margin-top: 36px;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 26px 34px;
+          border-radius: 20px;
+          border: 1px solid rgba(242, 193, 78, 0.4);
+          background: rgba(18, 10, 34, 0.85);
+          backdrop-filter: blur(20px);
+          opacity: 0;
+        }
+        #s2-root .s2-cart .cart-info {
+          font-size: 28px;
+        }
+        #s2-root .s2-cart .cart-info b {
+          font-size: 32px;
+        }
+      </style>
+
+      <div data-hf-id="hf-eyfu" id="s2-root" data-composition-id="scene-2" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-dpdr" class="phase" id="s2-phase-grid" style="opacity: 1">
+          <div data-hf-id="hf-4pyc" class="s2-grid">
+            <div class="mesa-tile"><div class="mesa-nombre">Mesa 1</div><div class="mesa-estado">Libre</div></div>
+            <div class="mesa-tile"><div class="mesa-nombre">Mesa 2</div><div class="mesa-estado">Libre</div></div>
+            <div class="mesa-tile"><div class="mesa-nombre">Mesa 3</div><div class="mesa-estado">Libre</div></div>
+            <div class="mesa-tile mesa-tile--abierta" id="s2-mesa-activa">
+              <div class="mesa-nombre">Mesa 4</div>
+              <div class="mesa-estado">● Abierta</div>
+            </div>
+            <div class="mesa-tile"><div class="mesa-nombre">Mesa 5</div><div class="mesa-estado">Libre</div></div>
+            <div class="mesa-tile"><div class="mesa-nombre">Mesa 6</div><div class="mesa-estado">Libre</div></div>
+            <div class="mesa-tile"><div class="mesa-nombre">Barra 1</div><div class="mesa-estado">Libre</div></div>
+            <div class="mesa-tile"><div class="mesa-nombre">Barra 2</div><div class="mesa-estado">Libre</div></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-6bz9" class="phase" id="s2-phase-order">
+          <div data-hf-id="hf-uxsc" class="s2-order">
+            <div data-hf-id="hf-rap8" class="s2-pills">
+              <span data-hf-id="hf-rrc5" class="pill pill--active">Cócteles</span>
+              <span data-hf-id="hf-7oaz" class="pill">Cervezas</span>
+              <span data-hf-id="hf-2i5b" class="pill">Snacks</span>
+            </div>
+            <div class="row-glass s2-product">
+              <div>
+                <div class="nombre">Mojito</div>
+                <div class="precio">$18.000</div>
+              </div>
+              <div class="stepper">
+                <div class="btn-minus">−</div>
+                <div class="qty" id="s2-qty">0</div>
+                <div class="btn-plus" id="s2-plus">+</div>
+              </div>
+            </div>
+            <div class="row-glass s2-product">
+              <div>
+                <div class="nombre">Margarita</div>
+                <div class="precio">$20.000</div>
+              </div>
+              <div class="stepper">
+                <div class="btn-minus">−</div>
+                <div class="qty" id="s2-qty-2">0</div>
+                <div class="btn-plus" id="s2-plus-2">+</div>
+              </div>
+            </div>
+            <div class="row-glass s2-product">
+              <div>
+                <div class="nombre">Cerveza Club Colombia</div>
+                <div class="precio">$8.000</div>
+              </div>
+              <div class="stepper">
+                <div class="btn-minus">−</div>
+                <div class="qty">0</div>
+                <div class="btn-plus" style="opacity: 0.55">+</div>
+              </div>
+            </div>
+            <div class="s2-cart" id="s2-cart">
+              <div data-hf-id="hf-t520" class="cart-info"><b data-hf-id="hf-xk0y" id="s2-cart-count">0</b> items · <span data-hf-id="hf-yabt" id="s2-cart-total">$0</span></div>
+              <div data-hf-id="hf-jqmx" class="btn-cta" id="s2-cta">Enviar a preparación</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        // tap the occupied table tile, then wipe into the order screen (scene-local time)
+        tl.to("#s2-mesa-activa", { scale: 0.94, duration: 0.1, ease: "power1.in" }, 0.82)
+          .to("#s2-mesa-activa", { scale: 1, duration: 0.14, ease: "power1.out" }, 0.92);
+        tl.to("#s2-phase-grid", { opacity: 0, duration: 0.22, ease: "power1.inOut" }, 0.9);
+        tl.fromTo("#s2-phase-order", { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "power1.inOut" }, 0.98);
+
+        // stepper taps on the real beat grid — 3 Mojito, then 1 Margarita — cart ticks up with each
+        const s2Qty = document.getElementById("s2-qty");
+        const s2Qty2 = document.getElementById("s2-qty-2");
+        const s2CartCount = document.getElementById("s2-cart-count");
+        const s2CartTotal = document.getElementById("s2-cart-total");
+        const s2Lines = [
+          { el: s2Qty, qty: 1, items: 1, total: 18000 },
+          { el: s2Qty, qty: 2, items: 2, total: 36000 },
+          { el: s2Qty, qty: 3, items: 3, total: 54000 },
+          { el: s2Qty2, qty: 1, items: 4, total: 74000 },
+        ];
+        const s2TapTimes = [1.911, 2.341, 3.002, 3.56]; // beat-grid: 4.911, 5.341, 6.002, 6.56 (global)
+        const s2Buttons = ["#s2-plus", "#s2-plus", "#s2-plus", "#s2-plus-2"];
+        s2TapTimes.forEach((t, i) => {
+          const btn = s2Buttons[i];
+          const line = s2Lines[i];
+          tl.to(btn, { scale: 0.82, duration: 0.07, ease: "power1.in" }, t)
+            .to(btn, { scale: 1, duration: 0.12, ease: "back.out(2)" }, t + 0.07)
+            .call(
+              () => {
+                line.el.textContent = line.qty;
+                s2CartCount.textContent = line.items;
+                s2CartTotal.textContent = "$" + line.total.toLocaleString("es-CO");
+              },
+              [],
+              t + 0.02,
+            );
+        });
+        tl.fromTo("#s2-cart", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 1.93);
+
+        // final send press — builds to a bright flash that lands just before the hard cut at scene end (5.742)
+        tl.to("#s2-cta", { scale: 0.92, duration: 0.09, ease: "power1.in" }, 5.0)
+          .to("#s2-cta", { scale: 1.06, duration: 0.14, ease: "back.out(2.2)" }, 5.09)
+          .to("#s2-cta", { scale: 1, duration: 0.1, ease: "power1.out" }, 5.23)
+          .fromTo(
+            "#s2-cta",
+            { filter: "brightness(1)" },
+            { filter: "brightness(1.7)", duration: 0.45, ease: "power2.out" },
+            5.1,
+          ); // peaks ~5.55, well before the 5.742 scene exit (global 8.742, the strong-cue cut)
+
+        window.__timelines["scene-2"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

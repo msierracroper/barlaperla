@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
+      <style>
+        #s1-root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          font-family: "Plus Jakarta Sans", sans-serif;
+          color: #f6f1ff;
+          background: radial-gradient(ellipse 120% 70% at 50% -5%, rgba(255, 77, 141, 0.16), transparent 60%),
+            linear-gradient(170deg, #120a22, #241a44 70%);
+        }
+        #s1-root .glow {
+          position: absolute;
+          width: 560px;
+          height: 560px;
+          left: 50%;
+          top: 50%;
+          margin-left: -280px;
+          margin-top: -280px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255, 77, 141, 0.45), transparent 70%);
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0.85;
+        }
+        #s1-root .stage {
+          position: relative;
+          z-index: 1;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        #s1-root .marquee-wordmark {
+          display: flex;
+          align-items: baseline;
+          justify-content: center;
+          gap: 26px;
+        }
+        #s1-root .marquee-word {
+          display: flex;
+        }
+        #s1-root .marquee-word span {
+          font-family: "Righteous", sans-serif;
+          font-size: 108px;
+          line-height: 1;
+          letter-spacing: 0.01em;
+          color: #f2c14e;
+          text-shadow: 0 0 28px rgba(242, 193, 78, 0.55), 0 0 64px rgba(255, 77, 141, 0.3);
+        }
+        #s1-root .tagline {
+          margin-top: 36px;
+          font-weight: 600;
+          font-size: 44px;
+          text-align: center;
+        }
+      </style>
+
+      <div data-hf-id="hf-6s20" id="s1-root" data-composition-id="scene-1" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+        <div data-hf-id="hf-tan6" class="stage">
+          <div data-hf-id="hf-utky" class="marquee-wordmark" id="s1-wordmark">
+            <div data-hf-id="hf-vnjl" class="marquee-word"><span data-hf-id="hf-hm6v">L</span><span data-hf-id="hf-ms68">A</span></div>
+            <div data-hf-id="hf-ofl1" class="marquee-word"><span data-hf-id="hf-g0yr">P</span><span data-hf-id="hf-l6y4">E</span><span data-hf-id="hf-f8cp">R</span><span data-hf-id="hf-cs5z">L</span><span data-hf-id="hf-r7dk">A</span></div>
+            <div data-hf-id="hf-pmi4" class="marquee-word"><span data-hf-id="hf-fmnq">S</span><span data-hf-id="hf-h7vu">O</span><span data-hf-id="hf-k011">F</span><span data-hf-id="hf-efqn">T</span></div>
+          </div>
+          <div data-hf-id="hf-u4i7" class="tagline" id="s1-tagline" style="opacity: 0">Tu bar. En vivo.</div>
+        </div>
+      </div>
+
+      <script src="../assets/music/audio-data.js"></script>
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        // beat-grid: 0.557, 1.091, 1.637 (word-by-word marquee ignition, scene-local = global here)
+        const s1Words = document.querySelectorAll("#s1-wordmark .marquee-word");
+        const s1BeatTimes = [0.557, 1.091, 1.637];
+        s1Words.forEach((word, i) => {
+          const letters = word.querySelectorAll("span");
+          tl.fromTo(
+            letters,
+            { opacity: 0, scale: 0.5 },
+            { opacity: 1, scale: 1, duration: 0.22, ease: "back.out(1.6)", stagger: 0.045 },
+            s1BeatTimes[i],
+          );
+        });
+
+        // full-sign glow pulse once all three words are lit
+        tl.fromTo(
+          "#s1-wordmark",
+          { filter: "brightness(1)" },
+          { filter: "brightness(1.55)", duration: 0.15, ease: "power1.out", yoyo: true, repeat: 1 },
+          2.194,
+        );
+
+        tl.fromTo(
+          "#s1-tagline",
+          { opacity: 0, scale: 0.85 },
+          { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.5)" },
+          2.3,
+        );
+
+        // subtle audio-reactive glow — bass band breathes the marquee halo
+        const s1GlowEl = document.getElementById("s1-glow");
+        const s1Frames = Math.round(3 * 30);
+        for (let f = 0; f < s1Frames; f++) {
+          const t = f / 30;
+          const bass = AUDIO_DATA.frames[f] ? AUDIO_DATA.frames[f].bands[0] : 0;
+          tl.call(
+            () => {
+              s1GlowEl.style.transform = `scale(${(1 + (bass - 0.5) * 0.1).toFixed(4)})`;
+              s1GlowEl.style.opacity = (0.78 + bass * 0.2).toFixed(3);
+            },
+            [],
+            t,
+          );
+        }
+
+        window.__timelines["scene-1"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,250 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
+      <style>
+        #s3-root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          font-family: "Plus Jakarta Sans", sans-serif;
+          color: #f6f1ff;
+          background: radial-gradient(ellipse 120% 70% at 50% -5%, rgba(255, 77, 141, 0.16), transparent 60%),
+            linear-gradient(170deg, #120a22, #241a44 70%);
+        }
+        #s3-root .phase {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          opacity: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 0 72px;
+        }
+        #s3-root .glass-card {
+          border-radius: 22px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+        }
+        #s3-root .pill {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 999px;
+          padding: 14px 30px;
+          font-size: 28px;
+          font-weight: 600;
+          color: rgba(246, 241, 255, 0.7);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        #s3-root .pill--active {
+          color: #120a22;
+          background: #f2c14e;
+          border-color: transparent;
+          box-shadow: 0 0 26px -4px rgba(242, 193, 78, 0.75);
+        }
+        #s3-root .btn-cta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          padding: 26px 56px;
+          font-size: 34px;
+          font-weight: 700;
+          color: #fff;
+          background: linear-gradient(135deg, #ff4d8d, #ff8a3d);
+          box-shadow: 0 16px 40px -12px rgba(255, 77, 141, 0.65);
+        }
+        #s3-root .row-glass {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-radius: 18px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          padding: 24px 30px;
+        }
+        #s3-root .label-up {
+          font-size: 26px;
+          font-weight: 600;
+          color: rgba(246, 241, 255, 0.55);
+        }
+        #s3-root .money {
+          font-family: "Righteous", sans-serif;
+          color: #f2c14e;
+          font-variant-numeric: tabular-nums;
+        }
+        #s3-root .comanda-card {
+          width: 100%;
+          max-width: 760px;
+          padding: 36px 40px;
+        }
+        #s3-root .comanda-card .mesa {
+          font-size: 30px;
+          font-weight: 600;
+          color: rgba(246, 241, 255, 0.6);
+        }
+        #s3-root .comanda-card .item {
+          margin-top: 8px;
+          font-size: 32px;
+          font-weight: 700;
+        }
+        #s3-root .s3-items {
+          width: 100%;
+          margin-bottom: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        #s3-root .s3-item-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 26px;
+          color: rgba(246, 241, 255, 0.65);
+          padding: 0 6px;
+        }
+        #s3-root .estado-chip {
+          display: inline-flex;
+          margin-top: 24px;
+          padding: 12px 26px;
+          border-radius: 999px;
+          font-size: 26px;
+          font-weight: 700;
+          background: rgba(255, 92, 122, 0.18);
+          color: #ff5c7a;
+        }
+        #s3-root .estado-chip--listo {
+          background: rgba(95, 227, 160, 0.18);
+          color: #5fe3a0;
+        }
+        #s3-root .s3-cobro {
+          width: 100%;
+          max-width: 780px;
+        }
+        #s3-root .s3-pills {
+          display: flex;
+          gap: 16px;
+          margin-bottom: 32px;
+        }
+        #s3-root .s3-total-row {
+          margin-bottom: 18px;
+        }
+        #s3-root .s3-total-row .label-up {
+          display: block;
+          margin-bottom: 8px;
+        }
+        #s3-root .s3-total-row .valor {
+          font-size: 44px;
+        }
+        #s3-root .s3-cta {
+          margin-top: 30px;
+          width: 100%;
+          text-align: center;
+        }
+      </style>
+
+      <div data-hf-id="hf-i9e4" id="s3-root" data-composition-id="scene-3" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-696m" class="phase" id="s3-phase-kitchen" style="opacity: 1">
+          <div data-hf-id="hf-sr2j" class="glass-card comanda-card" id="s3-comanda">
+            <div class="mesa">Mesa 4 · Mesera: Camila</div>
+            <div class="item">Mojito ×3</div>
+            <div class="item">Margarita ×1</div>
+            <div class="estado-chip" id="s3-estado">Pendiente</div>
+          </div>
+        </div>
+        <div data-hf-id="hf-zxcl" class="phase" id="s3-phase-cobro">
+          <div data-hf-id="hf-5p70" class="s3-cobro">
+            <div data-hf-id="hf-xbct" class="s3-pills">
+              <span data-hf-id="hf-oitv" class="pill" id="s3-pill-efectivo">Efectivo</span>
+              <span data-hf-id="hf-3wu9" class="pill">Tarjeta</span>
+              <span data-hf-id="hf-3kqz" class="pill">Transferencia</span>
+            </div>
+            <div class="s3-items">
+              <div class="s3-item-row"><span>Mojito ×3</span><span>$54.000</span></div>
+              <div class="s3-item-row"><span>Margarita ×1</span><span>$20.000</span></div>
+            </div>
+            <div class="row-glass s3-total-row">
+              <div><span class="label-up">Total a pagar</span><div class="valor money">$74.000</div></div>
+            </div>
+            <div data-hf-id="hf-814v" class="row-glass s3-total-row" id="s3-cambio-row" style="opacity: 0">
+              <div data-hf-id="hf-y7yw"><span data-hf-id="hf-wrum" class="label-up">Cambio</span><div data-hf-id="hf-d5s6" class="valor money">$6.000</div></div>
+            </div>
+            <div data-hf-id="hf-mqjj" class="s3-cta">
+              <span data-hf-id="hf-fg0v" class="btn-cta" id="s3-cta">Registrar pago y cerrar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        // beat-locked: 0 (scene-local) = global 8.742 — comanda arrival, right on the strong-cue cut-in
+        tl.fromTo(
+          "#s3-comanda",
+          { opacity: 0, scale: 0.75, y: 30 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: "back.out(1.5)" },
+          0,
+        );
+
+        // beat-grid: 1.092 (global 9.834) — status flips to "Listo"
+        tl.call(
+          () => {
+            const chip = document.getElementById("s3-estado");
+            chip.textContent = "Listo";
+            chip.classList.add("estado-chip--listo");
+          },
+          [],
+          1.092,
+        );
+        tl.fromTo("#s3-estado", { scale: 0.85 }, { scale: 1, duration: 0.18, ease: "back.out(2)" }, 1.092);
+
+        // hard cut into cobro screen — beat-grid: 1.626 (global 10.368)
+        tl.to("#s3-phase-kitchen", { opacity: 0, duration: 0.18, ease: "power1.inOut" }, 1.626);
+        tl.fromTo("#s3-phase-cobro", { opacity: 0 }, { opacity: 1, duration: 0.18, ease: "power1.inOut" }, 1.698);
+
+        // beat-grid: 2.183 (global 10.925) — payment method selected
+        tl.call(() => document.getElementById("s3-pill-efectivo").classList.add("pill--active"), [], 2.183);
+        tl.fromTo(
+          "#s3-pill-efectivo",
+          { scale: 1 },
+          { scale: 1.08, duration: 0.14, ease: "back.out(2)", yoyo: true, repeat: 1 },
+          2.183,
+        );
+        // beat-grid: 2.717 (global 11.459) — change auto-calculates in
+        tl.fromTo(
+          "#s3-cambio-row",
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+          2.717,
+        );
+
+        // confirm press — chime + flash crescendo into the strong-cue cut at scene end (4.366 local = global 13.108)
+        tl.to("#s3-cta", { scale: 0.93, duration: 0.09, ease: "power1.in" }, 3.808)
+          .to("#s3-cta", { scale: 1, duration: 0.16, ease: "back.out(2)" }, 3.898)
+          .fromTo(
+            "#s3-cta",
+            { filter: "brightness(1)" },
+            { filter: "brightness(1.8)", duration: 0.5, ease: "power2.out" },
+            3.858,
+          ); // peaks ~4.31, before the 4.366 exit into the admin payoff
+
+        window.__timelines["scene-3"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

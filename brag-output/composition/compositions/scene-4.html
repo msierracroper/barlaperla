@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Righteous&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
+      <style>
+        #s4-root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          font-family: "Plus Jakarta Sans", sans-serif;
+          color: #f6f1ff;
+          background: radial-gradient(ellipse 110% 65% at 50% 0%, rgba(54, 224, 214, 0.1), transparent 60%),
+            linear-gradient(175deg, #0a0614, #19122e 70%);
+        }
+        #s4-root .stage {
+          position: relative;
+          z-index: 1;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        #s4-root .glass-card {
+          border-radius: 22px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+        }
+        #s4-root .pill {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 999px;
+          padding: 14px 30px;
+          font-size: 28px;
+          font-weight: 600;
+          color: rgba(246, 241, 255, 0.7);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        #s4-root .pill--active {
+          color: #120a22;
+          background: #f2c14e;
+          border-color: transparent;
+          box-shadow: 0 0 26px -4px rgba(242, 193, 78, 0.75);
+        }
+        #s4-root .row-glass {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-radius: 18px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          padding: 20px 26px;
+        }
+        #s4-root .label-up {
+          font-size: 26px;
+          font-weight: 600;
+          color: rgba(246, 241, 255, 0.55);
+        }
+        #s4-root .money {
+          font-family: "Righteous", sans-serif;
+          color: #f2c14e;
+          font-variant-numeric: tabular-nums;
+        }
+        #s4-root .device-frame {
+          position: relative;
+          width: 760px;
+          height: 1020px;
+          border-radius: 56px;
+          border: 3px solid rgba(255, 255, 255, 0.14);
+          background: rgba(10, 6, 20, 0.55);
+          backdrop-filter: blur(10px);
+          padding: 54px 46px;
+          box-shadow: 0 40px 90px -20px rgba(0, 0, 0, 0.6);
+        }
+        #s4-root .phase-inner {
+          position: absolute;
+          inset: 54px 46px;
+          opacity: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 26px;
+        }
+        #s4-root .kpi-tile {
+          padding: 30px 34px;
+        }
+        #s4-root .kpi-tile .valor {
+          margin-top: 10px;
+          font-size: 58px;
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+        }
+        #s4-root .mini-chart {
+          padding: 26px 30px 22px;
+        }
+        #s4-root .mini-chart .bars {
+          display: flex;
+          align-items: flex-end;
+          gap: 12px;
+          height: 130px;
+          margin-top: 16px;
+        }
+        #s4-root .mini-chart .bar {
+          flex: 1;
+          height: calc(var(--h) * 100%);
+          background: linear-gradient(180deg, #ff8a3d, #ff4d8d);
+          border-radius: 8px 8px 3px 3px;
+          transform-origin: bottom;
+          box-shadow: 0 0 16px -6px rgba(255, 77, 141, 0.7);
+        }
+        #s4-root .reportes-pills {
+          display: flex;
+          gap: 14px;
+        }
+        #s4-root .reportes-table {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        #s4-root .reportes-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 20px 26px;
+          font-size: 26px;
+          opacity: 0;
+        }
+        #s4-root .reportes-row .fecha {
+          color: rgba(246, 241, 255, 0.6);
+        }
+        #s4-root .reportes-row .utilidad {
+          color: #5fe3a0;
+        }
+        #s4-root .s4-tagline {
+          margin-top: 46px;
+          font-size: 38px;
+          font-weight: 600;
+          text-align: center;
+          opacity: 0;
+        }
+      </style>
+
+      <div data-hf-id="hf-bkwy" id="s4-root" data-composition-id="scene-4" data-width="1080" data-height="1920">
+        <div data-hf-id="hf-tan6" class="stage">
+          <div data-hf-id="hf-i7ru" class="device-frame">
+            <div data-hf-id="hf-6fja" class="phase-inner" id="s4-phase-dash" style="opacity: 1">
+              <div data-hf-id="hf-du8m" class="glass-card kpi-tile">
+                <span data-hf-id="hf-icyr" class="label-up">Venta total</span>
+                <div data-hf-id="hf-iuku" class="valor money"><span data-hf-id="hf-11r0" id="s4-kpi-1">$0</span></div>
+              </div>
+              <div data-hf-id="hf-qkoq" class="glass-card kpi-tile">
+                <span data-hf-id="hf-3adt" class="label-up">Utilidad estimada</span>
+                <div data-hf-id="hf-zb6a" class="valor money"><span data-hf-id="hf-4467" id="s4-kpi-2">$0</span></div>
+              </div>
+              <div data-hf-id="hf-qyzr" class="glass-card kpi-tile">
+                <span data-hf-id="hf-igrg" class="label-up">Fiados pendientes</span>
+                <div data-hf-id="hf-zphb" class="valor money"><span data-hf-id="hf-akee" id="s4-kpi-3">$0</span></div>
+              </div>
+              <div class="glass-card mini-chart">
+                <span class="label-up">Ventas — últimos 7 días</span>
+                <div class="bars" id="s4-bars">
+                  <div class="bar" style="--h: 0.5"></div>
+                  <div class="bar" style="--h: 0.62"></div>
+                  <div class="bar" style="--h: 0.45"></div>
+                  <div class="bar" style="--h: 0.7"></div>
+                  <div class="bar" style="--h: 0.58"></div>
+                  <div class="bar" style="--h: 0.82"></div>
+                  <div class="bar" style="--h: 1"></div>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-ubgu" class="phase-inner" id="s4-phase-reportes">
+              <div data-hf-id="hf-arcx" class="reportes-pills">
+                <span data-hf-id="hf-597c" class="pill">Hoy</span>
+                <span data-hf-id="hf-78u1" class="pill pill--active">7 días</span>
+                <span data-hf-id="hf-wjh7" class="pill">Mes</span>
+              </div>
+              <div class="reportes-table">
+                <div class="row-glass reportes-row"><span class="fecha">12 Oct</span><span>$385.000</span><span class="utilidad">$128.000</span></div>
+                <div class="row-glass reportes-row"><span class="fecha">13 Oct</span><span>$402.000</span><span class="utilidad">$134.000</span></div>
+                <div class="row-glass reportes-row"><span class="fecha">14 Oct</span><span>$412.000</span><span class="utilidad">$138.000</span></div>
+                <div class="row-glass reportes-row"><span class="fecha">15 Oct</span><span>$398.000</span><span class="utilidad">$129.000</span></div>
+                <div class="row-glass reportes-row"><span class="fecha">16 Oct</span><span>$438.000</span><span class="utilidad">$145.000</span></div>
+              </div>
+            </div>
+          </div>
+          <div data-hf-id="hf-6s0t" class="s4-tagline" id="s4-tagline">Tu negocio, donde estés.</div>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        function countUp(elId, target, start, dur, prefix) {
+          const el = document.getElementById(elId);
+          const state = { value: 0 };
+          tl.to(
+            state,
+            {
+              value: target,
+              duration: dur,
+              ease: "power3.out",
+              onUpdate: () => {
+                el.textContent = prefix + Math.round(state.value).toLocaleString("es-CO");
+              },
+            },
+            start,
+          );
+          tl.fromTo(el, { scale: 0.92 }, { scale: 1, duration: dur, ease: "power3.out" }, start);
+        }
+        // scene-local times (global minus 13.108) — KPI tiles count up one after another
+        countUp("s4-kpi-1", 1248000, 0.192, 1.0, "$");
+        countUp("s4-kpi-2", 412000, 1.3, 0.9, "$");
+        countUp("s4-kpi-3", 86000, 2.3, 0.8, "$");
+
+        // weekly sales bars grow in right after the KPIs land
+        tl.fromTo(
+          "#s4-bars .bar",
+          { scaleY: 0 },
+          { scaleY: 1, duration: 0.35, ease: "back.out(1.4)", stagger: 0.06 },
+          3.0,
+        );
+
+        // crossfade dashboard -> reportes
+        tl.to("#s4-phase-dash", { opacity: 0, duration: 0.25, ease: "power1.inOut" }, 4.3);
+        tl.fromTo("#s4-phase-reportes", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.inOut" }, 4.45);
+        tl.fromTo(
+          "#s4-root .reportes-row",
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.3, ease: "power2.out", stagger: 0.15 },
+          4.75,
+        );
+        tl.fromTo(
+          "#s4-tagline",
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
+          5.85,
+        ); // lands ~6.2, before the 6.548 scene exit
+
+        window.__timelines["scene-4"] = tl;
+      </script>
+    </template>
+  </body>
+</html>
